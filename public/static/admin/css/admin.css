@@ -1,0 +1,1924 @@
+/* ==================== 基础样式重置 ==================== */
+body {
+  font-size: 12.5px;
+}
+
+a {
+  transition: all 1s ease;
+  font-size: 12.5px;
+}
+
+a:hover {
+  color: #16baaa;
+  transition: all 1s ease;
+}
+
+img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.mt15 {
+  margin-top: 15px;
+}
+
+.text-left {
+  text-align: left !important;
+}
+
+.text-center {
+  text-align: center !important;
+}
+
+.layui-layout-admin .c-logo {
+    width: 180px;
+}
+
+.c-logo span {
+  font-size: 18px;
+  background: linear-gradient(to right, #16baaa, #764ba2, #f093fb, #f5576c);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 800;
+  color: #fff;
+  font-family: "Poppins", -apple-system, "PingFang SC", "Microsoft YaHei",
+    sans-serif;
+
+  /* 添加动画效果 */
+  animation: gradientMove 3s ease infinite;
+}
+
+/* 定义渐变动画 */
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* 兼容性处理 */
+@-webkit-keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* ==================== 重置Layui样式 ==================== */
+.layui-tab .layui-tab-title li {
+  font-size: 12.5px;
+}
+
+.layui-btn {
+  padding: 0 12px;
+}
+
+.layui-btn-sm {
+  padding: 0 10px;
+  line-height: 28px;
+}
+
+.layui-btn-xs {
+  padding: 0 5px;
+}
+
+.layui-text-center {
+  text-align: center;
+}
+
+.layui-btn,
+.layui-form-radio *,
+.layui-breadcrumb > *,
+.layui-tab-title li,
+.layui-nav-tree .layui-nav-item a,
+.layui-nav *,
+.layui-colla-title,
+.layui-form-checkbox span,
+.layui-icon {
+  font-size: 12.5px;
+  border-radius: 4px;
+}
+
+.layui-form-checked[lay-skin="primary"] i {
+  border-color: #16baaa !important;
+  background-color: #16baaa !important;
+}
+
+.c-checked i {
+  border-color: #16baaa !important;
+  background-color: #16baaa !important;
+}
+
+.layui-table td,
+.layui-table th {
+  font-size: 12.5px;
+}
+
+.layui-table th {
+  padding: 10px 15px;
+}
+
+.layui-layout-admin .layui-body {
+  left: 180px;
+  bottom: 0;
+  background: #f0f4f2;
+  padding: 15px;
+  overflow-y: scroll;
+  transition: all 0.5s;
+}
+
+.layui-table tbody tr:hover,
+.layui-table thead tr,
+.layui-table-click,
+.layui-table-header,
+.layui-table-hover,
+.layui-table-mend,
+.layui-table-patch,
+.layui-table-tool,
+.layui-table-total,
+.layui-table-total tr,
+.layui-table[lay-even] tr:nth-child(even) {
+  background-color: #eff3f1;
+}
+
+.layui-table-view .layui-form-checkbox[lay-skin="primary"] i {
+  border-radius: 4px;
+}
+
+.layui-breadcrumb span[lay-separator] {
+  margin: 0 5px;
+}
+
+.layui-table,
+.layui-card {
+  border-radius: 8px;
+}
+
+.layui-card-header {
+  color: #16baaa;
+}
+
+.layui-badge {
+  border-radius: 4px;
+}
+
+.layui-badge:hover {
+  opacity: 0.6;
+}
+
+.layui-tab {
+  margin: 0;
+}
+
+.layui-tab-card {
+  box-shadow: 2px 0 8px 0 rgb(29 35 41 / 5%);
+  border-radius: 8px;
+}
+
+.layui-tab-card > .layui-tab-title {
+  background-color: #eff3f1;
+}
+
+.layui-breadcrumb a cite {
+  color: #16baaa;
+}
+
+.layui-form-radio:hover *,
+.layui-form-radioed,
+.layui-form-radioed > i {
+  color: #16baaa;
+}
+
+.layui-card-header i {
+  padding-right: 10px;
+}
+
+.layui-table {
+  margin: 0;
+  color: #333;
+}
+
+.layui-tab-content {
+  padding: 20px 20px 20px 0px;
+  background: #fff;
+}
+
+.layui-text-gray {
+  color: #999;
+}
+
+.layui-text-green {
+  color: #16baaa;
+}
+
+.layui-text-blue {
+  color: #1e9fff;
+}
+
+.layui-text-blue:hover {
+  color: #16baaa !important;
+}
+
+.layui-text-warm {
+  color: #ffb800 !important;
+}
+
+.layui-text-red {
+  color: #ff5722 !important;
+}
+
+.layui-layer {
+  border-radius: 8px;
+}
+
+.layui-layer-btn a {
+  border-radius: 4px;
+}
+
+.layui-layer-title {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.layui-layer-red .layui-layer-title {
+  background: #ff5722;
+  color: #fff;
+}
+
+.layui-layer-red .layui-layer-btn .layui-layer-btn0 {
+  background: #ff5722;
+  border-color: #ff5722;
+}
+
+.layui-input,
+.layui-select,
+.layui-textarea {
+  border-radius: 4px;
+}
+
+.layui-breadcrumb a.green:hover,
+.layui-breadcrumb a.blue:hover,
+.layui-breadcrumb a.yellow:hover,
+.layui-breadcrumb a.red:hover {
+  opacity: 0.6;
+}
+
+/* ==================== 后台首页专用样式 ==================== */
+.c-home-body {
+  background: #f2f6fc;
+  padding: 20px;
+  overflow-x: hidden;
+}
+
+/* 卡片头部统一样式 */
+.c-card-header {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #f0f0f0;
+  padding: 10px 15px;
+  font-weight: bold;
+}
+
+.c-card-header .layui-icon {
+  margin-right: 8px;
+  font-size: 18px;
+}
+
+.c-home-data {
+  margin-bottom: 30px;
+}
+
+/* 数据卡片区域 */
+.c-home-data .layui-card-body {
+  padding: 20px;
+  display: flex;
+  gap: 15px;
+}
+
+.c-data-card {
+  margin-bottom: 15px;
+  padding: 0 7.5px;
+}
+
+.c-data-card-link {
+  display: block;
+  height: 100%;
+  text-decoration: none;
+}
+
+.c-data-card {
+  margin-bottom: 15px;
+  padding: 0 7.5px;
+  transition: all 0.3s ease;
+}
+
+.c-data-card:hover {
+  transform: translateY(-3px);
+}
+
+.c-data-card-link {
+  display: block;
+  height: 100%;
+  text-decoration: none;
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.c-data-card-link:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  color: inherit;
+}
+
+.c-data-icon {
+  flex-shrink: 0;
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.02);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.c-data-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.c-data-count {
+  font-size: 20px;
+  font-weight: 600;
+  color: #303133;
+  line-height: 1.2;
+}
+
+.c-data-title {
+  font-size: 13px;
+  color: #909399;
+}
+
+.c-data-trend {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.c-data-trend[style*="color: #52c41a"],
+.c-trend-up {
+  color: #52c41a;
+}
+
+.c-data-trend[style*="color: #ff4d4f"],
+.c-trend-down {
+  color: #ff4d4f;
+}
+
+.c-trend-neutral {
+  color: #909399;
+  margin-bottom: 10px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.c-data-icon i {
+  font-size: 25px;
+}
+
+.c-data-title {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+/* 快捷方式区域 */
+.c-shortcut-card .layui-card-body {
+  padding: 20px;
+}
+
+.c-shortcut {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 15px;
+}
+
+.c-shortcut-item {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.01);
+  border: 1px solid #f0f4f2;
+  border-radius: 12px;
+}
+
+.c-shortcut-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  text-align: center;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.c-shortcut-item:hover {
+  background: #f0f4f2;
+}
+
+.c-shortcut-link .layui-icon {
+  font-size: 24px;
+  transition: all 0.3s ease;
+}
+
+.c-shortcut-link:hover .layui-icon {
+  transform: scale(1.2);
+}
+
+.c-shortcut-link cite {
+  font-style: normal;
+  margin-top: 10px;
+}
+
+/* 最新文章区域 */
+.c-articles-card .layui-card-body {
+  padding: 0;
+}
+
+.c-articles-body {
+  max-height: 545px;
+  overflow: auto;
+}
+
+.c-articles-table {
+  margin: 0;
+  border-radius: 0 0 8px 8px;
+  overflow: hidden;
+  box-shadow: none;
+  border: 1px solid #e6e6e6;
+}
+
+.c-articles-table thead {
+  background: linear-gradient(135deg, #1e9fff, #009688);
+}
+
+.c-articles-table thead th {
+  color: #fff;
+  font-weight: bold;
+  border: none;
+}
+
+.c-articles-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.c-article-title {
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.c-table-center {
+  text-align: center;
+}
+
+.c-table-left {
+  text-align: left;
+}
+
+.c-btn {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 6px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  font-size: 12px;
+}
+
+.c-btn-sm {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.c-btn-edit {
+  background: #16baaa;
+  color: #fff;
+}
+
+.c-btn-edit:hover {
+  background: #13a897;
+  color: #fff;
+}
+
+.c-more {
+  position: absolute;
+  right: 20px;
+  color: #1e9fff;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.c-more:hover {
+  color: #0d8add;
+}
+
+/* 右侧边栏 */
+.c-sidebar {
+  position: relative;
+}
+
+.c-system-card,
+.c-program-card {
+  margin-bottom: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.c-system-body,
+.c-program-body {
+  padding: 0 20px;
+}
+
+.c-notice-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.c-notice-item {
+  padding: 15px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.c-notice-item:last-child {
+  border-bottom: none;
+}
+
+.c-notice-title {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #1e9fff;
+}
+
+.c-notice-content {
+  color: #666;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.c-program-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.c-program-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.c-program-item:last-child {
+  border-bottom: none;
+}
+
+.c-program-label {
+  color: #666;
+  font-size: 13px;
+}
+
+.c-program-value {
+  color: #333;
+  font-size: 13px;
+}
+
+.c-text-green {
+  color: #16baaa !important;
+}
+
+/* ==================== 导航样式 ==================== */
+.c-body {
+  background: #f0f4f2;
+  padding: 15px;
+}
+
+.layui-layout-admin .layui-side,
+.layui-side-scroll,
+.layui-nav.layui-nav-tree {
+  transition: all 0.5s;
+
+  width: 180px;
+}
+
+.layui-layout-left {
+  left: 180px;
+}
+
+.layui-nav-tree .layui-this {
+  background: none;
+}
+
+.layui-nav-tree .layui-this a,
+.layui-nav-tree .layui-nav-item a:hover {
+  background-color: #16baaa !important;
+  border-radius: 0 !important;
+}
+
+.layui-nav-tree .layui-nav-item {
+  padding: 0.5px 0;
+}
+
+.layui-nav-tree .layui-nav-item a {
+  text-align: center;
+  padding: 6px 0;
+  transition: all 1s;
+  border-bottom: 1px solid #353d44;
+}
+
+.layui-nav .layui-nav-item .layui-icon {
+  margin-right: 5px;
+  transition: all 0.5s;
+}
+
+.layui-layout-shrink .layui-side,
+.layui-layout-shrink .layui-side-scroll,
+.layui-layout-shrink .layui-nav-tree {
+  width: 45px;
+}
+
+.layui-layout-shrink .layui-nav-tree .layui-nav-item a span {
+  display: none;
+}
+
+.layui-layout-shrink .layui-side .layui-nav .layui-nav-item .layui-icon {
+  font-size: 14px;
+  margin-right: 0;
+}
+
+.layui-layout-shrink .layui-body {
+  left: 45px;
+}
+
+.layui-layout-shrink .c-nav {
+  left: 60px;
+  transition: all 0.5s;
+}
+
+/* 弹性布局容器 */
+.c-flex-content {
+  display: flex;
+}
+
+/* 导航区域样式 */
+.c-nav {
+  width: 120px;
+  flex: 0 0 auto;
+}
+
+.c-nav ul {
+  transition: width 0.3s;
+  background: #fff;
+  box-shadow: 2px 0 8px 0 rgb(29 35 41 / 5%);
+  border-radius: 8px;
+}
+
+/* 内容区域样式 */
+.c-content {
+  flex: 1;
+  min-width: 0;
+  padding: 0 0 0 15px;
+}
+
+/* 无导航时的响应式处理 */
+.c-flex-content:not(.has-nav) .c-content {
+  width: 100%;
+  padding-left: 0;
+}
+
+/* 导航展开时的动画效果 */
+.c-nav.resizable {
+  width: 300px;
+  flex-shrink: 0;
+}
+
+.c-nav-tit {
+  color: #1e9fff;
+  padding: 1px 0;
+  position: relative;
+}
+
+.c-nav li a {
+  display: block;
+  line-height: 45px;
+  text-align: center;
+  position: relative;
+  word-wrap: normal;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  border-bottom: 1px solid #ecf6f6;
+}
+
+.c-nav li a::after {
+  background: #fff;
+  content: "";
+  height: 0%;
+  width: 3px;
+  top: 0;
+  position: absolute;
+}
+
+.c-nav li a i {
+  margin-right: 5px;
+  font-size: 12.5px;
+}
+
+.c-nav a:hover,
+.c-nav a.cur {
+  color: #16baaa;
+  background: #ecf6f6;
+}
+
+.c-nav a:hover::after,
+.c-nav a.cur::after {
+  background: #16baaa;
+  transition: all ease 1s;
+  height: 100%;
+  left: 0;
+}
+
+/* ==================== 用户信息样式 ==================== */
+.c-user-data {
+  overflow: hidden;
+}
+
+.c-user-data-item {
+  padding: 30px 0;
+  text-align: center;
+}
+
+.c-user-data-item img:hover {
+  transform: scale(1.1);
+  -webkit-transform: scale(1.1);
+  -moz-transform: scale(1.1);
+  -ms-transform: scale(1.1);
+  -o-transform: scale(1.1);
+}
+
+.c-user-data h3 {
+  font-size: 32px;
+}
+
+.c-user-data h4 {
+  margin-top: 20px;
+  color: #888;
+}
+
+.c-user-data h4 span {
+  font-size: 20px;
+}
+
+.c-userinfo-data-body {
+  height: 80.5vh;
+  overflow: hidden;
+  padding: 0;
+}
+
+/* 用户资料 */
+.c-userinfo {
+  position: fixed;
+  width: 250px;
+}
+
+.c-userinfo .layui-card {
+  height: 41.8vh;
+}
+
+.c-userinfo-data {
+  padding-left: 265px;
+}
+
+.c-userinfo-set {
+  text-align: center;
+  overflow: hidden;
+  padding: 15px 0;
+}
+
+.c-userinfo-set h3 {
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.c-userinfo-set h4 {
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.c-userinfo-img {
+  margin-bottom: 20px;
+  overflow: hidden;
+  text-align: center;
+}
+
+.c-userinfo-img img {
+  border-radius: 50%;
+  border: 5px solid #e2e2e2;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  -ms-border-radius: 50%;
+  -o-border-radius: 50%;
+}
+
+.c-more-icon {
+  position: absolute;
+  right: 15px;
+}
+
+/* ==================== 栏目管理样式 ==================== */
+.c-cate-content {
+  width: 100%;
+  height: 100%;
+  background: rgb(0 0 0 / 50%);
+  position: fixed;
+  left: 0;
+  top: 0;
+  display: none;
+  z-index: 99999;
+}
+
+.c-cate-select {
+  position: fixed;
+  width: 480px;
+  left: 50%;
+  margin-left: -240px;
+  height: 600px;
+  top: 50%;
+  margin-top: -300px;
+  box-shadow: 2px 0 8px 0 rgb(29 35 41 / 5%);
+  background: #fff;
+  border-radius: 8px;
+}
+
+.c-cate-select h3 {
+  padding: 15px;
+}
+
+.c-cate-select .c-cate-form {
+  padding: 10px 20px;
+  overflow-y: scroll;
+  height: 470px;
+}
+
+.c-cate-select .layui-btn-container {
+  padding: 10px 45px;
+}
+
+.c-cate-colla li {
+  border-bottom: 1px dashed #e6e6e6;
+  padding: 0 0 5px;
+}
+
+.c-flex {
+  display: flex;
+  box-sizing: border-box;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.c-flex-grow {
+  flex-grow: 1;
+  padding: 0 0 0 15px;
+  overflow: hidden;
+}
+
+.c-catetree {
+  background: #fff;
+  box-shadow: 2px 0 8px 0 rgb(29 35 41 / 5%);
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 10px 0;
+  max-height: calc(100vh - 110px);
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+.c-row-scoll {
+  max-height: 70vh;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.c-move-dialog {
+  position: relative;
+  height: 100%;
+}
+
+/* 通用弹窗容器 */
+.c-dialog-container {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 内容区域（可滚动） */
+.c-dialog-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 15px;
+}
+
+/* 固定底部操作栏 */
+.c-dialog-footer {
+  padding: 10px 15px;
+  border-top: 1px solid #eee;
+  background: #fff;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.03);
+}
+
+/* 按钮间距优化 */
+.c-dialog-footer .layui-btn {
+  margin-right: 8px;
+}
+
+.layui-form-checkbox[lay-skin="primary"] > div {
+  font-size: 13px;
+}
+
+.c-art-fr {
+  margin: 0px 0 0 165px;
+  padding: 10px 20px 20px !important;
+}
+
+.c-conf-wrap {
+  box-shadow: 2px 0 8px 0 rgb(29 35 41 / 5%);
+  border-radius: 8px;
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
+  -ms-border-radius: 8px;
+  -o-border-radius: 8px;
+}
+
+.c-content-main {
+  box-shadow: 2px 4px 10px 0 rgb(29 35 41 / 5%);
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  position: relative;
+}
+
+.c-form {
+  overflow: hidden;
+  box-shadow: 2px 0 8px 0 rgb(29 35 41 / 5%);
+  background: #fff;
+  padding: 30px 30px 30px 0;
+  border-radius: 8px;
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
+  -ms-border-radius: 8px;
+  -o-border-radius: 8px;
+}
+
+.c-form-content {
+  overflow: hidden;
+  padding: 15px;
+}
+
+.c-btn-fixed {
+  position: fixed;
+  bottom: -20px;
+  width: 1048px;
+  left: 16px;
+  background-color: #fff;
+  padding: 20px 0;
+  z-index: 999;
+}
+
+.c-btn-fixed .layui-btn {
+  margin-left: 45px;
+}
+
+.c-pos {
+  padding: 0 0 15px;
+  overflow: hidden;
+}
+
+.c-pos .layui-icon {
+  font-size: 12.5px !important;
+  margin-right: 3px;
+}
+
+.c-notice {
+  position: absolute;
+  right: 30px;
+}
+
+.editor-security-tips {
+  padding: 8px 12px;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  margin: 10px 0;
+  display: flex;
+  align-items: center;
+  color: #6c757d;
+}
+
+.tip-icon {
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.tip-text {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.c-edit a {
+  padding: 0 5px;
+  position: relative;
+  cursor: pointer;
+}
+
+.c-edit a:hover {
+  color: #03b19f !important;
+}
+
+.c-edit a::before {
+  content: "";
+  width: 2px;
+  height: 80%;
+  top: 10%;
+  left: -3px;
+  background: #ddd;
+  position: absolute;
+}
+
+.c-edit a:first-child:before {
+  display: none;
+}
+
+.layui-table img {
+  max-width: 100%;
+}
+
+.layui-table thead {
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+.c-line {
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.c-search {
+  position: absolute;
+  right: 200px;
+  z-index: 999;
+  top: 20px;
+  max-width: 1200px;
+}
+
+.c-search .layui-input-inline {
+  margin-right: 10px;
+}
+
+.layui-table-tool {
+  padding: 0 0 20px;
+  background: #fff;
+}
+
+.layui-table-view {
+  border: none;
+  margin: 0;
+}
+
+.layui-table-box {
+  border: 1px solid #eee;
+  border-top: none;
+}
+
+.layui-table-tool-self {
+  top: 3px;
+  right: 0;
+}
+
+/* ==================== 无限极栏目下拉样式 ==================== */
+.c-sort {
+  margin: 0;
+  display: inline-block;
+  color: #16baaa;
+  height: 24px;
+  font-size: 12.5px;
+  width: 30px;
+  padding: 0;
+  text-align: center;
+  border-radius: 4px;
+  border-color: #bededb;
+  background: #f0f4f2;
+}
+
+.c-catetree li {
+  position: relative;
+  word-wrap: normal;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  padding: 0 25px 0 20px;
+}
+
+.tree-table .layui-table-cell {
+  height: auto;
+  padding: 5px 15px;
+}
+
+.btn-expand {
+  cursor: pointer;
+  margin-right: 8px;
+}
+
+.c-catetree li .tree-cur a {
+  color: #16baaa;
+  border-color: #16baaa;
+}
+
+.c-tree-item {
+  position: relative;
+  line-height: 36px;
+  display: none;
+}
+
+.c-tree-item[data-pid="0"] {
+  display: block !important;
+}
+
+.c-tree-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: 1px solid #bededb;
+  border-radius: 4px;
+  background: #fff;
+  color: #93cbc6;
+  cursor: pointer;
+  font-size: 12.5px;
+  font-weight: bold;
+  margin-right: 5px;
+  padding: 0;
+  /* 移除Layui图标的影响 */
+  font-family: Arial, sans-serif;
+}
+
+.c-catetree li .c-tree-btn {
+  font-size: 10px;
+}
+
+.c-tree-btn:hover {
+  color: #16baaa;
+  border-color: #16baaa;
+}
+
+.c-tree-btn:hover {
+  color: #16baaa;
+  border-color: #16baaa;
+}
+
+.c-tree-nobtn {
+  background: #fafafa !important;
+  cursor: not-allowed !important;
+  border-radius: 4px;
+  width: 18px;
+  height: 18px;
+  line-height: 16px;
+  display: inline-block;
+  text-align: center;
+  border: 1px solid #e6e6e6 !important;
+  margin-right: 5px;
+  color: #ddd !important;
+  font-size: 12.5px;
+  position: relative;
+}
+
+.c-tree-nobtn:hover {
+  color: #fff;
+  opacity: 0.8;
+}
+
+.layui-tree-set {
+  padding: 6px 0;
+  border-bottom: 1px solid #f0f4f2;
+}
+
+.c-treeselect {
+  height: 680px;
+  overflow: auto;
+}
+
+.c-treeselect .layui-form-checkbox[lay-skin="primary"] {
+  margin: 0;
+}
+
+.layui-timeline-title {
+  font-size: 12.5px;
+}
+
+.layui-laypage {
+  overflow: hidden;
+  display: block;
+  margin: 20px 0 0;
+}
+
+.layui-laypage .pagination li {
+  float: left;
+}
+
+.layui-laypage .pagination li a:hover,
+.layui-laypage .pagination li.active span {
+  color: #fff;
+  background: #16baaa;
+  border-color: #16baaa;
+}
+
+.layui-laypage .pagination li.disabled span {
+  color: #888;
+  background: #f4f4f4;
+}
+
+.c-file-notice {
+  overflow: hidden;
+}
+
+.c-file-notice .layui-btn {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+}
+
+.c-conf-res {
+  overflow: hidden;
+  border-radius: 8px;
+  line-height: 0;
+  padding-left: 15px;
+  max-height: 100px;
+}
+
+.c-conf-res img {
+  max-width: 100%;
+  height: 36px !important;
+  max-height: 36px !important;
+  border-radius: 8px;
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
+  -ms-border-radius: 8px;
+  -o-border-radius: 8px;
+}
+
+.c-conf-file {
+  overflow: hidden;
+  position: relative;
+}
+
+.c-conf-file .c-file-res {
+  display: inline-block !important;
+  margin: 0 0 0 10px !important;
+  padding: 2px;
+  border: none;
+}
+
+.c-conf-file .c-file-res img {
+  min-width: auto;
+  max-height: 32px;
+}
+
+/* 图片容器默认隐藏 */
+.c-file-res {
+  display: none;
+  position: relative;
+  margin-top: 15px;
+  padding: 8px;
+  margin-left: 110px;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  background: #fff;
+}
+
+/* 裁剪容器样式 */
+.c-cropper-box {
+  height: 70vh;
+  overflow: hidden;
+  background: #f8f8f8;
+}
+
+.c-cropper-box img {
+  max-width: 100%;
+}
+
+/* 权限分配 */
+.c-auth-tree {
+  padding: 15px;
+  margin: 15px 0;
+  max-height: 70vh;
+  overflow-y: auto;
+  border: 1px solid #eee;
+  border-radius: 4px;
+}
+
+.c-auth-tree-node {
+  margin: 5px 0;
+}
+
+.c-auth-node-item {
+  padding: 5px 10px;
+  border-bottom: 1px solid #e6e6e6;
+}
+
+.c-auth-node-item:hover {
+  background: #f8f8f8;
+}
+
+.c-auth-children {
+  margin-left: 25px;
+}
+
+.c-auth-toggle {
+  cursor: pointer;
+  margin-right: 8px;
+  color: #666;
+}
+
+.c-auth-select-all {
+  margin-bottom: 15px;
+  padding: 10px;
+  background: #f8f8f8;
+  border-radius: 4px;
+}
+
+/* 删除按钮样式 */
+.c-del-btn {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  width: 24px;
+  height: 24px;
+  background: #ff4d4f;
+  border-radius: 50%;
+  color: white;
+  text-align: center;
+  line-height: 24px;
+  cursor: pointer;
+  transition: all 0.3s;
+  z-index: 9;
+}
+
+.c-del-btn:hover {
+  transform: scale(1.1);
+  background: #ff7875;
+}
+
+.c-del-btn .layui-icon {
+  font-size: 16px;
+  position: relative;
+  top: -1px;
+}
+
+/* 按钮组间距调整 */
+.layui-layer-btn .layui-layer-btn0 {
+  margin-right: 10px;
+}
+
+.c-file-res img {
+  min-width: 111px;
+  max-height: 100px;
+}
+
+.c-image-file {
+  position: relative;
+}
+
+.c-image-file .layui-btn {
+  float: left;
+}
+
+.c-image-file .layui-input-block {
+  margin-left: 211px;
+}
+
+.c-imgshow img {
+  max-height: 24px;
+}
+
+#textarea-content {
+  padding: 5px 0;
+  border: none;
+}
+
+#en-content {
+  padding: 5px 0;
+  border: none;
+}
+
+/* ==================== 特殊组件样式 ==================== */
+/* 最新动态样式 - 上下循环滚动 */
+.c-news-card {
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.c-news-icon {
+  margin-right: 10px;
+  color: #ff5722;
+  flex-shrink: 0;
+}
+
+.c-news-container {
+  flex: 1;
+  overflow: hidden;
+  height: 30px;
+  position: relative;
+}
+
+.c-news-list {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  transition: top 0.5s ease-in-out;
+}
+
+.c-news-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 30px;
+  padding: 0;
+  font-size: 14px;
+  color: #ff5722;
+}
+
+.c-news-content {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 15px;
+}
+
+.c-news-time {
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-right: 10px;
+}
+
+/* 倒计时样式 */
+.c-countdown {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #8ccccb, #05899a);
+  color: white;
+  border-radius: 8px;
+}
+
+.c-time-unit {
+  display: inline-block;
+  margin: 10px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  min-width: 40px;
+}
+
+#expired {
+  font-size: 2em;
+  color: #e74c3c;
+  display: none;
+}
+
+/* 网站到期倒计时样式 */
+.c-countdown-card .layui-card-body {
+  padding: 25px 20px;
+}
+
+.c-countdown {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  background: linear-gradient(135deg, #1e9fff, #16baaa);
+  border-radius: 10px;
+  padding: 30px 15px;
+  box-shadow: 0 4px 12px rgba(30, 159, 255, 0.1);
+}
+
+.c-countdown-item {
+  text-align: center;
+  flex: 1;
+}
+
+.c-countdown-number {
+  font-size: 20px;
+  font-weight: bold;
+  background: white;
+  color: #333;
+  border-radius: 6px;
+  padding: 8px 5px;
+  margin-bottom: 5px;
+  min-width: 35px;
+  display: inline-block;
+}
+
+.c-countdown-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+.c-countdown-colon {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0 2px;
+  padding-top: 8px;
+}
+
+.c-countdown-tip {
+  text-align: center;
+  font-size: 13px;
+  color: #666;
+  padding-top: 10px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.c-countdown-tip span {
+  color: #ff5722;
+  font-weight: bold;
+}
+
+/* 版权信息样式 */
+.c-footer {
+  margin-top: 30px;
+  padding: 20px 0;
+  border-top: 1px solid #e6e6e6;
+  text-align: center;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.c-copyright p {
+  margin: 5px 0;
+  color: #666;
+  font-size: 13px;
+}
+
+.c-copyright p:first-child {
+  font-weight: bold;
+  color: #333;
+}
+
+/* 固定右下角按钮 */
+.c-fixed-buttons {
+  position: fixed;
+  right: 30px;
+  bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  z-index: 9999;
+}
+
+.c-fixed-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  text-align: center;
+  font-size: 12px;
+}
+
+.c-fixed-btn:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  color: #fff;
+}
+
+.c-donate-btn {
+  background: linear-gradient(135deg, #ffb800, #ff5722);
+}
+
+.c-tech-btn {
+  background: linear-gradient(135deg, #1e9fff, #16baaa);
+}
+
+.c-fixed-btn .layui-icon {
+  font-size: 20px;
+  margin-bottom: 2px;
+}
+
+.c-fixed-btn span {
+  font-size: 11px;
+}
+
+/* 技术支持弹窗样式 */
+.c-contact-content {
+  padding: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.c-contact-header {
+  background: linear-gradient(135deg, #1e9fff, #009688);
+  color: #fff;
+  padding: 15px 20px;
+  text-align: center;
+}
+
+.c-contact-header h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.c-contact-body {
+  padding: 20px;
+}
+
+.c-contact-item {
+  display: flex;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.c-contact-item:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.c-contact-type {
+  flex: 0 0 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.c-contact-type .layui-icon {
+  font-size: 36px;
+  margin-bottom: 10px;
+  color: #1e9fff;
+}
+
+.c-contact-type span {
+  font-weight: bold;
+  color: #333;
+}
+
+.c-contact-info {
+  flex: 1;
+  padding-left: 20px;
+}
+
+.c-contact-info p {
+  margin: 0 0 10px;
+  color: #666;
+}
+
+.c-qrcode {
+  width: 150px;
+  height: 150px;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.c-qrcode-placeholder {
+  color: #999;
+}
+
+.c-qq-link {
+  display: inline-block;
+  padding: 8px 15px;
+  background: #1e9fff;
+  color: #fff;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.c-qq-link:hover {
+  background: #0d8add;
+  color: #fff;
+}
+
+/* ==================== 仪表盘模块分组折叠面板 ==================== */
+.c-home-data .layui-collapse {
+  width: 100%;
+  border: none;
+  border-radius: 0 0 8px 8px;
+}
+
+.c-module-group {
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  background: #fafbfc;
+}
+
+.layui-colla-item:first-child {
+  border-top: 1px solid #f0f0f0;
+}
+
+.c-module-group:last-child {
+  margin-bottom: 0;
+}
+
+.c-module-group .layui-colla-title {
+  background: #fff;
+  color: #303133;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 12px 15px;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.c-module-group .layui-colla-title:hover {
+  background: #f8f9fa;
+}
+
+.c-module-group .layui-colla-content {
+  padding: 15px;
+  background: #fafbfc;
+  border: none;
+}
+
+.c-module-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 20px;
+}
+
+.c-module-count {
+  font-size: 12px;
+  font-weight: 400;
+  color: #909399;
+  background: #f0f2f5;
+  padding: 2px 10px;
+  border-radius: 10px;
+}
+
+/* 折叠面板内的卡片布局优化 */
+.c-module-group .c-data-card {
+  margin-bottom: 0;
+}
+
+.c-module-group .layui-row {
+  margin-bottom: -15px;
+}
+
+.c-module-group .layui-row > .c-data-card {
+  margin: 10px 0;
+}
+
+/* ==================== 仪表盘右侧边栏 ==================== */
+.c-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.c-sidebar-card {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.c-sidebar-card .layui-card-body {
+  padding: 15px;
+}
+
+/* 联系我们列表 */
+.c-contact-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.c-contact-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 13px;
+}
+
+.c-contact-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.c-contact-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  width: 24px;
+  text-align: center;
+}
+
+.c-contact-label {
+  color: #909399;
+  white-space: nowrap;
+}
+
+.c-contact-value {
+  color: #303133;
+  word-break: break-all;
+}
+
+.c-contact-value a {
+  color: #1890ff;
+  text-decoration: none;
+}
+
+.c-contact-value a:hover {
+  text-decoration: underline;
+}
+
+/* QQ群行：文字居左，二维码居右 */
+.c-contact-qq {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.c-contact-qq .c-contact-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.c-contact-qq .c-contact-right {
+  flex-shrink: 0;
+  margin-left: 10px;
+}
+
+.c-qq-qrcode {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.c-qq-qrcode:hover {
+  transform: scale(1.05);
+}

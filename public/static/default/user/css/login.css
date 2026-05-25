@@ -1,0 +1,238 @@
+/* 登录页样式 - Win11 风格 */
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--color-bg-color) 0%, rgba(var(--color-primary-rgb), 0.05) 100%);
+    padding: 24px;
+}
+
+.auth-container {
+    width: 100%;
+    max-width: 600px;
+    background: var(--color-card-bg);
+    border-radius: calc(var(--layout-border-radius) * 2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    border: 1px solid var(--color-border-color);
+}
+
+.auth-header {
+    padding: 40px 32px 24px;
+    text-align: center;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    color: #fff;
+}
+
+.auth-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    margin-bottom: 16px;
+    color: #fff;
+}
+
+.auth-logo img {
+    width: 30%;
+    border-radius: 50%;
+}
+
+.auth-logo i {
+    color: #fff;
+}
+
+.auth-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #fff;
+}
+
+.auth-subtitle {
+    font-size: 14px;
+    opacity: 0.9;
+    color: #fff;
+}
+
+.auth-body {
+    padding: 32px;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.auth-input-group {
+    position: relative;
+}
+
+.auth-input {
+    width: 100%;
+    padding: 14px 16px 14px 48px;
+    border: 1px solid var(--color-border-color);
+    border-radius: var(--layout-border-radius);
+    font-size: var(--typo-font-size-base);
+    color: var(--color-text-color);
+    background: var(--color-bg-color);
+    transition: all var(--effect-transition-fast);
+}
+
+.auth-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
+}
+
+.auth-input::placeholder {
+    color: var(--color-text-color-secondary);
+    text-align: left;
+}
+
+/* 修复IE/Edge浏览器placeholder对齐问题 */
+.auth-input:-ms-input-placeholder {
+    text-align: left;
+}
+
+.auth-input::-ms-input-placeholder {
+    text-align: left;
+}
+
+.auth-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+}
+
+.auth-forgot {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.auth-forgot:hover {
+    text-decoration: underline;
+}
+
+.auth-btn {
+    width: 100%;
+    padding: 14px 24px;
+    background: var(--color-primary);
+    color: #fff;
+    border: none;
+    border-radius: var(--layout-border-radius);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--effect-transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.auth-btn:hover:not(:disabled) {
+    background: var(--color-primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.3);
+}
+
+.auth-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.auth-btn i {
+    transition: transform 0.3s ease;
+}
+
+.auth-btn.loading i {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.auth-footer {
+    text-align: center;
+    padding: 24px 32px;
+    border-top: 1px solid var(--color-border-color);
+    font-size: 14px;
+    color: var(--color-text-color-secondary);
+}
+
+.auth-footer a {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+/* 错误提示 */
+.auth-error {
+    padding: 12px 16px;
+    background: rgba(231, 76, 60, 0.1);
+    border: 1px solid rgba(231, 76, 60, 0.2);
+    border-radius: var(--layout-border-radius);
+    color: #e74c3c;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* 响应式 */
+@media (max-width: 480px) {
+    .auth-container {
+        border-radius: var(--layout-border-radius);
+    }
+    
+    .auth-header {
+        padding: 32px 24px 20px;
+    }
+    
+    .auth-body {
+        padding: 24px;
+    }
+}
+
+/* 暗色模式 */
+@media (prefers-color-scheme: dark) {
+    .auth-container {
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* 深色主题下header使用卡片背景色，文字使用主色 */
+    .auth-header {
+        background: var(--color-card-bg);
+        color: var(--color-text-color);
+        border-bottom: 1px solid var(--color-border-color);
+    }
+    
+    .auth-logo,
+    .auth-logo i {
+        color: var(--color-primary);
+    }
+    
+    .auth-title {
+        color: var(--color-text-color);
+    }
+    
+    .auth-subtitle {
+        color: var(--color-text-color-secondary);
+    }
+    
+    /* 深色主题按钮悬停效果 */
+    .auth-btn:hover:not(:disabled) {
+        background: var(--color-primary-light, var(--color-primary));
+        box-shadow: 0 4px 16px rgba(var(--color-primary-rgb), 0.5);
+    }
+}
