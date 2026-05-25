@@ -1,0 +1,551 @@
+{extend name="base" /}
+{block name="title"}设置管理{/block}
+{block name="main"}
+<div class="layui-body">
+	{include file="public/menu" /}
+
+	<div class="c-flex-content has-nav">
+		<div class="c-nav">
+			<ul>
+				{volist name="categories" id="cat"}
+				<li>
+					<a href="{:url('conf/conf',['model'=>$cat.id])}" class="{if $model == $cat.id}cur{/if}">{$cat.name}</a>
+				</li>
+				{/volist}
+			</ul>
+		</div>
+		<div class="c-content" style="max-height:calc(100vh - 90px);overflow-x:hidden;">
+			<!-- 原有配置表单（所有 model 都显示） -->
+			<form method="post" class="layui-form" enctype="multipart/form-data">
+				<div class="layui-tab-content" style="padding: 20px 20px 15px;">
+					{if $confCate.ename != 'exterior'}
+						<table class="layui-table">
+							<thead>
+								<tr>
+									<th width="100" class="text-center">配置名称</th>
+									<th class="text-left">配置值</th>
+									<th width="100" class="text-center">配置字段</th>
+								</tr>
+							</thead>
+							<tbody>
+								{volist name="Confs" id="vo"}
+									<tr>																
+										<td class="text-center">{$vo.title}</td>
+										<td>
+											{switch name="vo.type"}
+											{case value="1"}
+												<input type="text" name="{$vo.ename}" class="layui-input" value="{$vo.value}">
+											{/case}
+											{case value="2"}
+												{php}$arr=explode("\n", $vo['values']);{/php}
+												{volist name="arr" id="vo1"}
+													{php}$data = explode('=>', $vo1);{/php}
+													<input type="radio" name="{$vo.ename}" value="{$data[0]}" title="{$data[1]}" {if $vo.value eq $data[0]}checked{/if}>
+												{/volist}
+											{/case}
+											{case value="3"}
+												{php}$arr=explode("\n", $vo['values']);{/php}
+												{php}$values = explode(',', $vo['value']);{/php}
+												{volist name="arr" id="vo1"}
+													{php}$data = explode('=>', $vo1);{/php}
+													<input type="checkbox" name="{$vo.ename}[]" value="{$data[0]}" title="{$data[1]}" {if in_array($data[0], $values)}checked{/if}>
+												{/volist}
+											{/case}
+											{case value="4"}
+												{php}$arr=explode("\n", $vo['values']);{/php}
+												<select name="{$vo.ename}" lay-verify="required">
+													{volist name="arr" id="vo1"}
+														{php}$data = explode('=>', $vo1);{/php}
+														<option value="{$data[0]}" {if $vo.value eq $data[0]}selected{/if}>{$data[1]}</option>
+													{/volist}
+												</select>
+											{/case}
+											{case value="5"}
+												<textarea name="{$vo.ename}" class="layui-textarea">{$vo.value}</textarea>
+											{/case}
+											{case value="6"}
+												<div class="c-conf-file c-image-file">
+													<input type="hidden" name="{$vo.ename}" value="{$vo.value}" class="layui-input">
+													<a class="file-btn layui-btn layui-btn-primary" data-field="{$vo.ename}">
+														<i class="layui-icon">&#xe67c;</i>上传图片
+													</a>
+													<div class="c-file-res">
+														<a href="javascript:;" class="c-imgshow" data-src="{$vo.value}">
+															<img src="{$vo.value}">
+														</a>
+													</div>
+												</div>
+											{/case}
+											{case value="7"}
+												<input type="number" name="{$vo.ename}" step="0.01" class="layui-input" value="{$vo.value}">
+											{/case}
+											{case value="8"}
+												<input type="number" name="{$vo.ename}" step="1" class="layui-input" value="{$vo.value}">
+											{/case}
+											{case value="9"}
+												<textarea name="{$vo.ename}" class="layui-textarea" style="height:200px;">{$vo.value}</textarea>
+											{/case}
+											{/switch}
+										</td>
+										<td class="text-center">{$vo.ename}</td>								
+									</tr>			
+								{/volist}
+							</tbody>
+						</table>
+					{/if}
+
+					<!-- 主题选择卡片 -->
+					{if $confCate.ename == 'exterior'}
+						<style>
+						.layui-form-label {
+							width: 100px;
+						}
+						</style>
+						<fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+							<legend><i class="layui-icon layui-icon-theme"></i> 主题管理</legend>
+						</fieldset>
+						
+						<div class="c-theme-container">
+							<div class="layui-row layui-col-space25">
+								{volist name="theme_list" id="theme"}
+								<div class="layui-col-xs12 layui-col-sm6 layui-col-md4 layui-col-lg3">
+									<div class="c-theme-card {if $theme.dir eq $current_theme} c-theme-active{/if}">
+										<!-- 预览图区域 -->
+										<div class="c-theme-preview">
+											{php}
+												$preview = app()->getRootPath() . 'template/' . $theme['dir'] . '/preview.jpg';
+												$themeJson = app()->getRootPath() . 'template/' . $theme['dir'] . '/theme.json';
+											{/php}
+											{if file_exists($preview)}
+												<img src="/template/{$theme.dir}/preview.jpg" alt="{$theme.title}">
+											{elseif file_exists($themeJson) /}
+												{php}
+													$json = json_decode(file_get_contents($themeJson), true);
+												{/php}
+												<div class="c-theme-color-preview" style="background: {$json.colors.primary|default='#409EFF'};">
+													<div class="c-theme-color-overlay">
+														<i class="layui-icon layui-icon-light"></i>
+														<div class="c-theme-color-text">{$json.name|default=$theme.dir}</div>
+													</div>
+												</div>
+											{else/}
+												<div class="c-theme-no-preview">
+													<i class="layui-icon layui-icon-picture-fine"></i>
+													<div>暂无预览</div>
+												</div>
+											{/if}
+											
+											<!-- 当前使用角标 -->
+											{if $theme.dir eq $current_theme}
+												<div class="c-theme-badge">
+													<i class="layui-icon layui-icon-ok"></i> 当前使用
+												</div>
+											{/if}
+										</div>
+										
+										<!-- 信息区域 -->
+										<div class="c-theme-info">
+											<div class="c-theme-title">{$theme.title}</div>
+											{if isset($theme.description)}
+												<div class="c-theme-desc">{$theme.description}</div>
+											{/if}
+											<div class="c-theme-meta">
+												<span class="c-theme-dir"><i class="layui-icon layui-icon-folder"></i> {$theme.dir}</span>
+												{if isset($theme.version)}
+													<span class="c-theme-version">v{$theme.version}</span>
+												{/if}
+											</div>
+										</div>
+										
+										<!-- 操作区域 -->
+										<div class="c-theme-actions">
+											{if $theme.dir eq $current_theme}
+												<button class="layui-btn layui-btn-sm layui-btn-disabled" disabled>
+													<i class="layui-icon layui-icon-ok-circle"></i> 已应用
+												</button>
+											{else/}
+												<button class="layui-btn layui-btn-sm layui-btn-normal c-theme-apply" data-theme="{$theme.dir}">
+													<i class="layui-icon layui-icon-auz"></i> 应用主题
+												</button>
+											{/if}
+										</div>
+									</div>
+								</div>
+								{/volist}
+							</div>
+							
+							{if empty($theme_list)}
+								<div class="layui-card c-theme-empty">
+									<div class="layui-card-body" style="text-align:center;padding:60px 20px;">
+										<i class="layui-icon layui-icon-template-1" style="font-size:60px;color:#ccc;"></i>
+										<div style="margin-top:15px;color:#999;">暂无其他主题</div>
+										<div style="margin-top:8px;color:#bbb;font-size:13px;">请在 template/ 目录下新建主题目录</div>
+									</div>
+								</div>
+							{/if}
+						</div>
+					{/if}
+					<!-- 主题参数配置表单 -->
+					{if $confCate.ename == 'exterior' && isset($theme_config)}
+						<fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+							<legend><i class="layui-icon layui-icon-set"></i> 主题参数配置</legend>
+						</fieldset>
+
+						<div class="layui-row layui-col-space20">
+							<!-- 左侧：颜色配置 + 功能开关 -->
+							<div class="layui-col-md6">
+								<!-- 颜色配置 -->
+								<div class="layui-card">
+									<div class="layui-card-header">
+										<i class="layui-icon layui-icon-theme"></i> 颜色配置
+									</div>
+									<div class="layui-card-body" style="padding: 0;">
+										<div class="layui-tab layui-tab-brief" lay-filter="colorTab" style="margin: 0;">
+											<ul class="layui-tab-title">
+												<li class="layui-this"><i class="layui-icon layui-icon-light"></i> 浅色模式</li>
+												<li><i class="layui-icon layui-icon-moon"></i> 深色模式</li>
+											</ul>
+											<div class="layui-tab-content" style="padding: 15px;">
+												<!-- 浅色模式颜色 -->
+												<div class="layui-tab-item layui-show">
+													{foreach $theme_config.colors as $key=>$val}
+													<div class="layui-form-item">
+														<label class="layui-form-label">{$key}</label>
+														<div class="layui-input-inline">
+															<input type="color" name="color_{$key}" value="{$val}" class="layui-input">
+														</div>
+														<div class="layui-form-mid layui-word-aux">{$val}</div>
+													</div>
+													{/foreach}
+												</div>
+												<!-- 深色模式颜色 -->
+												<div class="layui-tab-item">
+													{if isset($theme_config.dark_colors)}
+													{foreach $theme_config.dark_colors as $key=>$val}
+													<div class="layui-form-item">
+														<label class="layui-form-label">{$key}</label>
+														<div class="layui-input-inline">
+															<input type="color" name="dark_color_{$key}" value="{$val}" class="layui-input">
+														</div>
+														<div class="layui-form-mid layui-word-aux">{$val}</div>
+													</div>
+													{/foreach}
+													{/if}
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<!-- 效果配置 -->
+								<div class="layui-card" style="margin-top: 20px;">
+									<div class="layui-card-header"><i class="layui-icon layui-icon-senior"></i> 效果配置</div>
+									<div class="layui-card-body">
+										{if isset($theme_config.effects)}
+										{foreach $theme_config.effects as $key=>$val}
+										<div class="layui-form-item">
+											<label class="layui-form-label">{$key}</label>
+											<div class="layui-input-inline" style="width: 60%;">
+												<input type="text" name="effect_{$key}" value="{$val}" class="layui-input">
+											</div>
+											<div class="layui-form-mid layui-word-aux">{$val}</div>
+										</div>
+										{/foreach}
+										{/if}
+									</div>
+								</div>
+
+							</div>
+
+							<!-- 右侧：布局配置 + 排版配置 -->
+							<div class="layui-col-md6">
+								<!-- 功能开关 -->
+								<div class="layui-card" style="margin-top: 20px;">
+									<div class="layui-card-header"><i class="layui-icon layui-icon-component"></i> 功能开关</div>
+									<div class="layui-card-body">
+										{if isset($theme_config.features)}
+										{foreach $theme_config.features as $key=>$val}
+										<div class="layui-form-item" style="margin-bottom: 0;">
+											<label class="layui-form-label">{$key}</label>
+											<div class="layui-input-inline">
+												<input type="checkbox" name="feature_{$key}" value="1" {if $val}checked{/if} lay-skin="switch" lay-text="ON|OFF">
+											</div>
+										</div>
+										{/foreach}
+										{/if}
+									</div>
+								</div>
+
+								<!-- 布局配置 -->
+								<div class="layui-card">
+									<div class="layui-card-header"><i class="layui-icon layui-icon-layouts"></i> 布局配置</div>
+									<div class="layui-card-body">
+										{foreach $theme_config.layout as $key=>$val}
+										<div class="layui-form-item">
+											<label class="layui-form-label">{$key}</label>
+											<div class="layui-input-inline">
+												{if is_bool($val)}
+												<input type="checkbox" name="layout_{$key}" value="1" {if $val}checked{/if} lay-skin="switch" lay-text="ON|OFF">
+												{else/}
+												<input type="text" name="layout_{$key}" value="{$val}" class="layui-input">
+												{/if}
+											</div>
+										</div>
+										{/foreach}
+									</div>
+								</div>
+								
+								<!-- 排版配置 -->
+								<div class="layui-card" style="margin-top: 20px;">
+									<div class="layui-card-header"><i class="layui-icon layui-icon-fonts-del"></i> 排版配置</div>
+									<div class="layui-card-body">
+										{if isset($theme_config.typography)}
+										{foreach $theme_config.typography as $key=>$val}
+										<div class="layui-form-item">
+											<label class="layui-form-label">{$key}</label>
+											<div class="layui-input-inline" style="width: 70%;">
+												<input type="text" name="typo_{$key}" value="{$val}" class="layui-input">
+											</div>
+										</div>
+										{/foreach}
+										{/if}
+									</div>
+								</div>
+
+							</div>
+						</div>
+
+						<div class="layui-form-item mt15">
+							<button class="layui-btn" lay-submit lay-filter="c-verify">保存主题配置</button>
+						</div>
+					{/if}
+
+					<!-- 原有保存按钮（非exterior时显示） -->
+					{if $confCate.ename != 'exterior'}
+						<div class="layui-form-item mt15">
+							<button class="layui-btn" lay-submit lay-filter="c-verify">保存设置</button>
+							<a href="{:url('conf/lst',['model'=>$model])}" class="layui-btn layui-btn-normal">字段列表</a>
+						</div>
+					{/if}
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+{/block}
+
+
+{block name="css"}
+{css href="/static/js/cropperjs/cropper.min.css"}
+<style>
+/* 主题卡片容器 */
+.c-theme-container {
+    padding: 0 20px 30px;
+}
+
+/* 主题卡片 */
+.c-theme-card {
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.c-theme-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+}
+
+.c-theme-active {
+    border-color: #1E9FFF;
+    box-shadow: 0 2px 15px rgba(30,159,255,0.2);
+}
+
+/* 预览图区域 */
+.c-theme-preview {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+    background: #f8f9fa;
+}
+
+.c-theme-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.c-theme-card:hover .c-theme-preview img {
+    transform: scale(1.05);
+}
+
+/* 彩色预览占位 */
+.c-theme-color-preview {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.c-theme-color-overlay {
+    text-align: center;
+    color: #fff;
+}
+
+.c-theme-color-overlay i {
+    font-size: 48px;
+    opacity: 0.8;
+}
+
+.c-theme-color-text {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 10px;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+/* 无预览占位 */
+.c-theme-no-preview {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #ccc;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.c-theme-no-preview i {
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+.c-theme-no-preview div {
+    font-size: 14px;
+}
+
+/* 当前使用角标 */
+.c-theme-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(30,159,255,0.9);
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    backdrop-filter: blur(5px);
+}
+
+.c-theme-badge i {
+    margin-right: 4px;
+}
+
+/* 信息区域 */
+.c-theme-info {
+    padding: 15px;
+    flex: 1;
+}
+
+.c-theme-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.c-theme-desc {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 10px;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.c-theme-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #999;
+}
+
+.c-theme-meta i {
+    margin-right: 4px;
+    font-size: 12px;
+}
+
+.c-theme-version {
+    background: #f0f0f0;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+}
+
+/* 操作区域 */
+.c-theme-actions {
+    padding: 0 15px 15px;
+    text-align: center;
+}
+
+.c-theme-actions .layui-btn {
+    width: 100%;
+    border-radius: 6px;
+}
+
+/* 空状态 */
+.c-theme-empty {
+    border: 2px dashed #e0e0e0;
+    border-radius: 10px;
+    background: #fafafa;
+}
+</style>
+{/block}
+
+{block name="javascript"}
+{js href="/static/js/cropperjs/cropper.min.js"}
+{include file="public/uploadimg"}
+
+{if $model == 2}
+<script>
+layui.use(['layer', 'jquery'], function(){
+    var layer = layui.layer;
+    var $ = layui.jquery;
+
+    // 应用主题
+    $('.c-theme-apply').on('click', function(){
+        var theme = $(this).data('theme');
+        var btn = $(this);
+
+        layer.confirm('确定要应用主题「' + btn.closest('.c-theme-card').find('.c-theme-title').text() + '」吗？', {
+            title: '应用主题',
+            btn: ['确定', '取消']
+        }, function(){
+            $.post('{:url("conf/switchTheme")}', {theme: theme}, function(res){
+                if (res.code == 200) {
+                    layer.msg(res.msg, {icon: 1});
+                    setTimeout(function(){ location.reload(); }, 800);
+                } else {
+                    layer.msg(res.msg, {icon: 2});
+                }
+            });
+        });
+    });
+});
+</script>
+{/if}
+
+{/block}

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>后台管理系统登录</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/static/js/layui/css/layui.css">
+    <link rel="stylesheet" href="/static/admin/css/login.css"> 
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h2>后台管理系统</h2>
+        </div>
+        <div class="login-body">
+            <form class="layui-form" id="loginForm">
+                <div class="layui-form-item">
+                    <i class="layui-icon layui-icon-username form-icon"></i>
+                    <input type="text" name="username" lay-verify="required" placeholder="用户名" autocomplete="off" class="layui-input">
+                    <div class="error-msg" id="usernameError"></div>
+                </div>
+                <div class="layui-form-item">
+                    <i class="layui-icon layui-icon-password form-icon"></i>
+                    <input type="password" name="password" lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input">
+                    <div class="error-msg" id="passwordError"></div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="captcha-container">
+                        <input type="text" name="captcha" lay-verify="required" placeholder="验证码" autocomplete="off" class="layui-input" style="flex: 1;">
+                        <img id="captchaImg" class="captcha-img" src="{:captcha_src()}" onclick="this.src='{:captcha_src()}?'+Math.random();" alt="验证码" title="点击刷新验证码">
+                    </div>
+                    <div class="error-msg" id="captchaError"></div>
+                </div>
+                <div class="layui-form-item">
+                    <button class="layui-btn login-btn" lay-submit lay-filter="login">登录</button>
+                </div>
+            </form>
+        </div>
+        <div class="login-footer">
+            Copyright © {:date('Y')} 后台管理系统
+        </div>
+    </div>
+
+    <script src="/static/js/layui/layui.js"></script>
+    <script>
+        layui.use(['form', 'layer'], function(){
+            var form = layui.form;
+            var layer = layui.layer;
+            var $ = layui.$;            
+            let isSubmitting = false; // 防止重复提交
+
+            // 自定义验证规则
+            form.verify({
+                username: function(value, item){
+                    if(value.length < 3){
+                        $('#usernameError').text('用户名至少3个字符').show();
+                        return '用户名至少3个字符';
+                    } else {
+                        $('#usernameError').hide();
+                    }
+                },
+                password: function(value, item){
+                    if(value.length < 6){
+                        $('#passwordError').text('密码至少6个字符').show();
+                        return '密码至少6个字符';
+                    } else {
+                        $('#passwordError').hide();
+                    }
+                },
+                captcha: function(value, item){
+                    if(value.length <= 0) {
+                        return '请输入验证码';
+                    } else {
+                        $('#captchaError').hide();
+                    }
+                }
+            });
+            
+            // 监听提交
+            form.on('submit(login)', function(data) {
+                if(isSubmitting) return false;
+			    isSubmitting = true;
+                // 显示加载中
+                var index = layer.load(1, {
+                    shade: [0.1, '#fff']
+                });
+                const $form = $(this);
+                // 模拟API响应
+                const handleResponse = (res) => {          
+                    if(res.code === 200) {
+                        window.location.href = "{:url('index/dashboard')}";
+                    } else {
+                        $('#captchaImg').click();
+                        return layer.msg(res.msg, {icon: 5});
+                    }
+                };
+                $.ajax({
+                    url: "{:url('login/submit')}",
+                    data: data.field,
+                    type: 'POST',
+                    success: handleResponse,
+                    error: (xhr) => {
+                        $('#captchaImg').click();
+                        layer.msg(`网络错误：${xhr.statusText}`, {icon: 5});
+                        layer.close(index);
+                    },
+                    complete: () => {
+                        isSubmitting = false;
+                        layer.close(index);
+                    }
+                });                
+                return false; // 阻止表单跳转
+            });
+            
+            // 按Enter键快速提交
+            $(document).keydown(function(event){
+                if(event.keyCode === 13){
+                    $('.login-btn').click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

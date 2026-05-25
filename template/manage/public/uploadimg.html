@@ -1,0 +1,241 @@
+ 
+<script>
+    layui.use(['layer', 'jquery'], function(){
+        var layer = layui.layer;
+        var $ = layui.$;
+        var cropper = null;
+        var originalFile = null; // 存储原始文件对象
+    
+        // 初始化上传按钮
+        $('.file-btn').on('click', function(e) {
+            e.preventDefault();
+            var field = $(this).data('field'); 
+            var $container = $(this).closest('.c-image-file');
+            
+            // 创建隐藏的文件输入框
+            var $input = $('<input type="file" accept="image/jpeg,image/png,image/gif,image/webp,image/bmp" style="display:none;">');
+            $('body').append($input);
+            
+            $input.trigger('click').on('change', function(e) {
+                var file = e.target.files[0];
+                if (!file) return;
+    
+                // 文件类型验证
+                if (!/\.(jpe?g|png|gif|webp|bmp)$/i.test(file.name)) {
+                    layer.msg('支持格式：JPG/PNG/GIF/WEBP/BMP');
+                    return;
+                }
+    
+                // 文件大小验证（2MB）
+                if (file.size > 2 * 1024 * 1024) {
+                    layer.msg('文件大小不能超过2MB');
+                    return;
+                }
+    
+                // 保存原始文件
+                originalFile = file;
+    
+                // 显示裁剪界面
+                var reader = new FileReader();
+                reader.onload = function(event) {
+                    initCropper(event.target.result, field, $container);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+     
+    // 比例切换处理函数
+    function handleRatioChange(ratio) {
+        if (cropper) {
+            // 设置新的裁剪比例（4:3或自由比例）
+            const newRatio = ratio === '4:3' ? 4/3 : NaN;
+            cropper.setAspectRatio(newRatio);
+            
+            // 自动重置裁剪区域到最大可用范围
+            cropper.setCropBoxData({
+                width: cropper.getContainerData().width,
+                height: cropper.getContainerData().height
+            });
+        }
+    }
+
+    
+    // 初始化裁剪界面（重点修改部分）
+    function initCropper(imgSrc, field, $container) {
+        var layerIndex = layer.open({
+            type: 1,
+            title: '图片处理 - 推荐使用4:3比例',
+            content: `<div class="c-cropper-container" style="padding:20px">
+                        <div class="ratio-controls" style="margin-bottom:15px">
+                            <button type="button" class="layui-btn  layui-btn-sm ratio-btn active" data-ratio="4:3">4:3比例</button>
+                            <button type="button" class="layui-btn layui-btn-primary layui-btn-sm  ratio-btn" data-ratio="free">自由比例</button>
+                        </div>
+                        <div class="cropper-wrapper">
+                            <img class="cropper-image">
+                        </div>
+                      </div>`,
+            area: ['80%', '80%'], // 增加高度容纳控制按钮
+            btn: ['裁剪上传', '原图上传', '取消'],
+            yes: function() { // 裁剪上传
+                    try {
+                        var canvas = cropper.getCroppedCanvas({
+                            minWidth: 200,
+                            minHeight: 200,
+                            imageSmoothingQuality: 'high'
+                        });
+                        
+                        if (!canvas || canvas.width < 200 || canvas.height < 200) {
+                            layer.msg('裁剪区域不能小于200×200像素');
+                            return;
+                        }
+    
+                        canvas.toBlob(function(blob) {
+                            uploadImage(blob, field, $container);
+                        }, 'image/jpeg', 0.85);
+                        
+                    } catch(e) {
+                        layer.msg('请选择有效区域');
+                    }
+                    layer.close(layerIndex);
+                },
+                btn2: function() { // 原图上传
+                    if (!originalFile) {
+                        layer.msg('未选择文件');
+                        return false;
+                    }
+                    
+                    // 直接上传原始文件
+                    var formData = new FormData();
+                    formData.append('file', originalFile);
+                    formData.append('ratio', 'original'); // 标识原图上传
+    
+                    $.ajax({
+                        url: '{:url("upload/UploadImg")}',
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function(res) {
+                            if (res.code === 200) {
+                                updateUI(res.url ? res.url : res.path, field, $container);
+                                layer.close(layerIndex);
+                                layer.msg('原图上传成功');
+                            } else {
+                                layer.msg(res.msg || '上传失败');
+                            }
+                        }
+                    });
+                    return false; // 防止自动关闭
+                },
+                cancel: function() {
+                    if(cropper) cropper.destroy();
+                },
+            success: function(layero, index) {
+                // 初始化Cropper实例
+                const $img = layero.find('.cropper-image');
+                $img.attr('src', imgSrc);
+                
+                // 销毁旧实例
+                if(cropper) cropper.destroy();
+                
+                // 创建新实例
+                cropper = new Cropper($img[0], {
+                    aspectRatio: 4/3, // 默认4:3比例
+                    viewMode: 1,
+                    autoCropArea: 0.8,
+                    minContainerWidth: 300,
+                    minContainerHeight: 300,
+                    minCanvasWidth: 200,
+                    minCanvasHeight: 200,
+                    dragMode: 'move',
+                    cropBoxMovable: true,
+                    cropBoxResizable: true
+                });
+
+                // 绑定比例切换事件
+                layero.find('.ratio-btn').on('click', function() {
+                    const ratio = $(this).data('ratio');
+                    $(this).addClass('active').siblings().removeClass('active');
+                    handleRatioChange(ratio);
+                });
+            }
+        });
+    }
+        // 统一更新UI的方法
+        function updateUI(path, field, $container) {
+            var $input = $container.find('input[name="'+field+'"]');
+            var $imgBox = $container.find('.c-file-res');
+            
+            // 更新表单字段
+            $input.val(path);
+            
+            // 显示图片容器
+            $imgBox.css({
+                'display': 'inline-block',
+                'margin-top': '15px'
+            });
+            
+            // 更新图片预览
+            var $img = $imgBox.find('img').attr('src', path).show();
+            $imgBox.find('.c-imgshow').data('src', path);
+            
+            // 添加删除按钮（如果不存在）
+            if(!$imgBox.find('.c-del-btn').length){
+                $img.after('<div class="c-del-btn"><i class="layui-icon">&#x1006;</i></div>');
+            }
+        }
+    
+        // 上传裁剪后的图片
+        function uploadImage(blob, field, $container) {
+            var formData = new FormData();
+            formData.append('file', blob, 'cropped.jpg');
+    
+            $.ajax({
+                url: '{:url("upload/UploadImg")}',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(res) {
+                    if (res.code === 200) {
+                        updateUI(res.url ? res.url : res.path, field, $container);
+                        layer.msg('裁剪上传成功');
+                    } else {
+                        layer.msg(res.msg || '上传失败');
+                    }
+                }
+            });
+        }
+    
+        // 图片删除功能
+        $(document).on('click', '.c-del-btn', function(e) {
+            e.stopPropagation();
+            var $wrap = $(this).closest('.c-image-file');
+            var imgPath = $wrap.find('input').val();
+            
+            layer.confirm('确定删除该图片吗？',{ icon: 5,
+                skin: 'layui-layer-red',}, function(index) {
+                $.post('{:url("upload/DeleteImg")}', {path: imgPath}, function(res) {
+                    if (res.code === 200) {
+                        // 重置表单字段
+                        $wrap.find('input').val('');
+                        
+                        // 隐藏图片容器
+                        $wrap.find('.c-file-res').css('display', 'none');
+                        
+                        // 清除预览图
+                        $wrap.find('img').attr('src', '').hide();
+                        
+                        // 移除删除按钮
+                        $wrap.find('.c-del-btn').remove();
+                        
+                        layer.msg('删除成功',{icon: 1,});
+                    } else {
+                        layer.msg(res.msg || '删除失败',{icon: 5,});
+                    }
+                });
+                layer.close(index);
+            });
+        });
+    });
+</script> 

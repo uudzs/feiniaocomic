@@ -1,0 +1,77 @@
+{extend name="base" /}
+{block name="title"}模块设置{/block}
+{block name="main"}
+<div class="layui-card">
+    <div class="layui-card-header">模块设置 - {$module.title}</div>
+    <div class="layui-card-body">
+        <form class="layui-form" method="post">
+            <div class="layui-form-item">
+                <label class="layui-form-label">模块名称</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" value="{$module.name}" disabled>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">模块标题</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" value="{$module.title}" disabled>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">版本</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" value="{$module.version}" disabled>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">作者</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" value="{$module.author}" disabled>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">描述</label>
+                <div class="layui-input-block">
+                    <textarea class="layui-textarea" disabled>{$module.description}</textarea>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">状态</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" value="{$module.status_text}" disabled>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="settingSubmit">保存设置</button>
+                    <button type="button" class="layui-btn layui-btn-primary" onclick="parent.layer.closeAll()">取消</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name="javascript"}
+<script>
+layui.use(['form', 'layer'], function(){
+    var form = layui.form;
+    var layer = layui.layer;
+    const $ = layui.$;
+    form.on('submit(settingSubmit)', function(data){
+        layer.load();
+        $.post('{:url("module/setting")}', data.field, function(res){
+            layer.closeAll('loading');
+            if(res.code === 200){
+                layer.msg(res.msg, {icon: 1}, function(){
+                    parent.layer.closeAll();
+                });
+            } else {
+                layer.msg(res.msg, {icon: 2});
+            }
+        });
+
+        return false;
+    });
+});
+</script>
+{/block}

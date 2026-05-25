@@ -1,0 +1,367 @@
+<!-- ==================== PC端导航栏 ==================== -->
+<div class="pc-navbar hidden-mobile">
+    <nav class="pc-nav">
+        <div class="pc-nav-container">
+            <!-- Logo -->
+            <div class="pc-nav-brand" onclick="window.location.href='{:url('/')}'">
+                <img src="{$ConfRes.logo|default='/static/images/logo.png'}" alt="{$ConfRes.sitename}">
+                <span>{$ConfRes.sitename|default=''}</span>
+            </div>
+            
+            <!-- 菜单 -->
+            <ul class="pc-nav-menu">
+                <li><a href="{:url('/')}" class="pc-nav-link {if $App.module == 'index' && $App.action == 'index'}active{/if}">首页</a></li>
+                <li><a href="{:furl('comic_index')}" class="pc-nav-link {if $App.module == 'comic'}active{/if}">漫画库</a></li>
+                <li><a href="{:url('/app')}" class="pc-nav-link {if $App.action == 'app'}active{/if}">APP</a></li>
+            </ul>
+            
+            <!-- 搜索框 -->
+            <div class="pc-nav-search">
+                <form id="pcNavSearchForm" onsubmit="handlePcNavSearch(event)">
+                    <input type="text" id="pcNavSearchInput" placeholder="搜索漫画、作者..." value="{$keyword|default=''}" class="pc-nav-search-input">
+                    <button type="submit" class="pc-nav-search-btn">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </form>
+            </div>
+            
+            <!-- 用户区域 -->
+            <div class="pc-nav-user" id="pcNavUser">
+                <div class="pc-nav-user-guest" id="pcNavUserGuest">
+                    <a href="javascript:void(0);" onclick="goToLogin()" class="btn btn-secondary btn-sm">
+                        <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                        <span>登录</span>
+                    </a>
+                    <a href="javascript:void(0);" onclick="goToRegister()" class="btn btn-primary btn-sm">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span>注册</span>
+                    </a>
+                </div>
+                <div class="pc-nav-user-logged" id="pcNavUserLogged" style="display: none;">
+                    <div class="pc-nav-user-menu">
+                        <button class="pc-nav-user-trigger" id="pcNavUserTrigger">
+                            <img src="/static/images/logo.png" alt="头像" class="pc-nav-user-avatar" id="pcNavUserAvatar">
+                            <span class="pc-nav-user-name" id="pcNavUserName">用户</span>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </button>
+                        <div class="pc-nav-user-dropdown" id="pcNavUserDropdown">
+                            <a href="{:furl('user_index')}"><i class="fa-solid fa-user"></i>个人中心</a>
+                            <a href="{:furl('user_follows', ['page' => 1])}"><i class="fa-solid fa-users"></i>我的关注</a>
+                            <a href="{:furl('user_historys', ['page' => 1])}"><i class="fa-solid fa-clock-rotate-left"></i>阅读历史</a>
+                            <a href="{:furl('user_favorites', ['page' => 1])}"><i class="fa-solid fa-heart"></i>我的收藏</a>
+                            <div class="divider"></div>
+                            <a href="javascript:void(0);" onclick="handleLogout()"><i class="fa-solid fa-right-from-bracket"></i>退出登录</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 主题切换 -->
+            <button class="pc-theme-toggle" id="pcThemeToggle" aria-label="切换主题">
+                <i class="fa-solid fa-sun" id="pcThemeIcon"></i>
+            </button>
+        </div>
+    </nav>
+</div>
+
+<!-- ==================== 移动端导航栏 ==================== -->
+<div class="mobile-navbar hidden-pc">
+    <!-- 顶部栏 -->
+    <div class="mobile-nav-header">
+        <div class="mobile-nav-brand" onclick="window.location.href='{:url('/')}'">
+            <img src="{$ConfRes.logo|default='/static/images/logo.png'}" alt="{$ConfRes.sitename}">
+            <span>{$ConfRes.sitename|default=''}</span>
+        </div>
+        <div class="mobile-nav-actions">
+            <button class="mobile-nav-btn" id="mobileNavSearchBtn" aria-label="搜索">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+            <button class="mobile-nav-btn" id="mobileNavThemeBtn" aria-label="切换主题">
+                <i class="fa-solid fa-moon" id="mobileThemeIcon"></i>
+            </button>
+            <button class="mobile-nav-btn" id="mobileNavMenuBtn" aria-label="菜单">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- 搜索栏（可展开） -->
+    <div class="mobile-nav-search" id="mobileNavSearch">
+        <form id="mobileNavSearchForm" onsubmit="handleMobileNavSearch(event)">
+            <input type="text" id="mobileNavSearchInput" placeholder="搜索漫画、作者..." class="mobile-nav-search-input">
+            <button type="submit" class="mobile-nav-search-btn">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+        </form>
+        <button class="mobile-nav-search-close" id="mobileNavSearchClose">
+            <i class="fa-solid fa-times"></i>
+        </button>
+    </div>
+    
+    <!-- 侧边菜单 -->
+    <div class="mobile-side-menu" id="mobileSideMenu">
+        <div class="mobile-side-menu-header">
+            <span>菜单</span>
+            <button class="mobile-side-menu-close" id="mobileSideMenuClose">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        </div>
+        <div class="mobile-side-menu-user" id="mobileSideMenuUser">
+            <div class="mobile-side-menu-user-guest" id="mobileSideMenuUserGuest">
+                <a href="javascript:void(0);" onclick="goToLogin()" class="mobile-side-menu-login">
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                    登录 / 注册
+                </a>
+            </div>
+            <div class="mobile-side-menu-user-logged" id="mobileSideMenuUserLogged" style="display: none;">
+                <img src="/static/images/logo.png" alt="头像" class="mobile-side-menu-avatar" id="mobileSideMenuAvatar">
+                <div class="mobile-side-menu-user-info">
+                    <span class="mobile-side-menu-nickname" id="mobileSideMenuNickname">用户</span>
+                    <a href="{:furl('user_index')}" class="mobile-side-menu-profile">个人中心</a>
+                </div>
+            </div>
+        </div>
+        <ul class="mobile-side-menu-list">
+            <li>
+                <a href="{:url('/')}" class="mobile-side-menu-link {if $App.module == 'index' && $App.action == 'index'}active{/if}">
+                    <i class="fa-solid fa-home"></i>
+                    <span>首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="{:furl('comic_index')}" class="mobile-side-menu-link {if $App.module == 'comic'}active{/if}">
+                    <i class="fa-solid fa-book-open"></i>
+                    <span>漫画库</span>
+                </a>
+            </li>
+            <li>
+                <a href="{:url('/app')}" class="mobile-side-menu-link {if $App.action == 'app'}active{/if}">
+                    <i class="fa-solid fa-mobile-screen"></i>
+                    <span>APP下载</span>
+                </a>
+            </li>
+        </ul>
+        <div class="mobile-side-menu-divider"></div>
+        <ul class="mobile-side-menu-list mobile-side-menu-user-links" id="mobileSideMenuUserLinks" style="display: none;">
+            <li>
+                <a href="{:furl('user_follows', ['page' => 1])}" class="mobile-side-menu-link">
+                    <i class="fa-solid fa-users"></i>
+                    <span>我的关注</span>
+                </a>
+            </li>
+            <li>
+                <a href="{:furl('user_historys', ['page' => 1])}" class="mobile-side-menu-link">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span>阅读历史</span>
+                </a>
+            </li>
+            <li>
+                <a href="{:furl('user_favorites', ['page' => 1])}" class="mobile-side-menu-link">
+                    <i class="fa-solid fa-heart"></i>
+                    <span>我的收藏</span>
+                </a>
+            </li>
+        </ul>
+        <div class="mobile-side-menu-footer" id="mobileSideMenuFooter" style="display: none;">
+            <a href="javascript:void(0);" onclick="handleLogout()" class="mobile-side-menu-logout">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>退出登录</span>
+            </a>
+        </div>
+    </div>
+    <div class="mobile-side-overlay" id="mobileSideOverlay"></div>
+</div>
+
+<script>
+// ==================== PC端功能 ====================
+document.getElementById('pcNavUserTrigger')?.addEventListener('click', function(e) {
+    e.stopPropagation();
+    document.getElementById('pcNavUserDropdown').classList.toggle('show');
+});
+
+document.addEventListener('click', function(e) {
+    const dropdown = document.getElementById('pcNavUserDropdown');
+    const trigger = document.getElementById('pcNavUserTrigger');
+    if (dropdown && !dropdown.contains(e.target) && !trigger?.contains(e.target)) {
+        dropdown.classList.remove('show');
+    }
+});
+
+function handlePcNavSearch(event) {
+    event.preventDefault();
+    const keyword = document.getElementById('pcNavSearchInput').value.trim();
+    if (!keyword) return;
+    window.location.href = '{:furl("/" . ($App.module == "index" ? "comic" : $App.module) . "/s")}?keyword=' + encodeURIComponent(keyword);
+}
+
+// ==================== 移动端功能 ====================
+// 搜索展开/收起
+document.getElementById('mobileNavSearchBtn')?.addEventListener('click', function() {
+    document.getElementById('mobileNavSearch').classList.add('active');
+    document.getElementById('mobileNavSearchInput').focus();
+});
+
+document.getElementById('mobileNavSearchClose')?.addEventListener('click', function() {
+    document.getElementById('mobileNavSearch').classList.remove('active');
+});
+
+function handleMobileNavSearch(event) {
+    event.preventDefault();
+    const keyword = document.getElementById('mobileNavSearchInput').value.trim();
+    if (!keyword) return;
+    window.location.href = '{:furl("/" . ($App.module == "index" ? "comic" : $App.module) . "/s")}?keyword=' + encodeURIComponent(keyword);
+}
+
+// 侧边菜单
+document.getElementById('mobileNavMenuBtn')?.addEventListener('click', function() {
+    openMobileMenu();
+});
+
+document.getElementById('mobileSideMenuClose')?.addEventListener('click', function() {
+    closeMobileMenu();
+});
+
+document.getElementById('mobileSideOverlay')?.addEventListener('click', function() {
+    closeMobileMenu();
+});
+
+function openMobileMenu() {
+    document.getElementById('mobileSideMenu').classList.add('active');
+    document.getElementById('mobileSideOverlay').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeMobileMenu() {
+    document.getElementById('mobileSideMenu').classList.remove('active');
+    document.getElementById('mobileSideOverlay').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+// ==================== 共用功能 ====================
+// 检查登录状态
+async function checkNavUserStatus() {
+    const token = await ApiClient.getToken();
+    
+    // PC端
+    const pcGuest = document.getElementById('pcNavUserGuest');
+    const pcLogged = document.getElementById('pcNavUserLogged');
+    
+    // 移动端
+    const mobileSideGuest = document.getElementById('mobileSideMenuUserGuest');
+    const mobileSideLogged = document.getElementById('mobileSideMenuUserLogged');
+    const mobileUserLinks = document.getElementById('mobileSideMenuUserLinks');
+    const mobileLogout = document.getElementById('mobileSideMenuFooter');
+    
+    if (!token) {
+        // 未登录
+        pcGuest.style.display = 'flex';
+        pcLogged.style.display = 'none';
+        mobileSideGuest.style.display = 'flex';
+        mobileSideLogged.style.display = 'none';
+        mobileUserLinks.style.display = 'none';
+        mobileLogout.style.display = 'none';
+        return;
+    }
+    
+    try {
+        const userInfo = await localStorage.getItem('userInfo');        
+        if (userInfo) {
+            const user = JSON.parse(userInfo);
+            const nickname = user.nickname || user.username || '用户';
+            const avatar = user.avatar || '/static/images/logo.png';
+
+            // PC端
+            pcGuest.style.display = 'none';
+            pcLogged.style.display = 'flex';
+            document.getElementById('pcNavUserName').textContent = nickname;
+            document.getElementById('pcNavUserAvatar').src = avatar;
+            
+            // 移动端侧边栏
+            mobileSideGuest.style.display = 'none';
+            mobileSideLogged.style.display = 'flex';
+            document.getElementById('mobileSideMenuNickname').textContent = nickname;
+            document.getElementById('mobileSideMenuAvatar').src = avatar;
+            mobileUserLinks.style.display = 'block';
+            mobileLogout.style.display = 'block';
+        } else {
+            showGuest();
+        }
+    } catch (error) {
+        showGuest();
+    }
+    
+    function showGuest() {
+        pcGuest.style.display = 'flex';
+        pcLogged.style.display = 'none';
+        mobileSideGuest.style.display = 'flex';
+        mobileSideLogged.style.display = 'none';
+        mobileUserLinks.style.display = 'none';
+        mobileLogout.style.display = 'none';
+    }
+}
+
+// 跳转到登录页
+function goToLogin() {
+    const redirect = encodeURIComponent(window.location.href);
+    window.location.href = '{:furl("user_login")}?redirect=' + redirect;
+}
+
+// 跳转到注册页
+function goToRegister() {
+    const redirect = encodeURIComponent(window.location.href);
+    window.location.href = '{:furl("user_register")}?redirect=' + redirect;
+}
+
+// 退出登录
+async function handleLogout() {
+    Modal.confirm('确定要退出登录吗？', async () => {
+        try {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userInfo');
+            window.location.reload();
+        } catch (e) {
+            Utils.showToast('退出登录失败！', 'error');
+        }
+    });
+}
+
+// 主题切换同步
+function syncThemeToggle(theme) {
+    const pcIcon = document.getElementById('pcThemeIcon');
+    const mobileIcon = document.getElementById('mobileThemeIcon');
+    if (theme === 'dark') {
+        pcIcon?.classList.replace('fa-sun', 'fa-moon');
+        mobileIcon?.classList.replace('fa-moon', 'fa-sun');
+    } else {
+        pcIcon?.classList.replace('fa-moon', 'fa-sun');
+        mobileIcon?.classList.replace('fa-sun', 'fa-moon');
+    }
+}
+
+// PC 端主题切换
+const themeToggle = document.getElementById('pcThemeToggle');
+themeToggle?.addEventListener('click', function() {
+    const isDark = document.documentElement.classList.toggle('dark-theme');
+    localStorage.setItem('feiniao-theme', isDark ? 'dark' : 'light');
+    document.body.classList.toggle('dark-theme', isDark);
+    syncThemeToggle(isDark ? 'dark' : 'light');
+});
+
+// 移动端主题切换
+const mobileThemeToggle = document.getElementById('mobileNavThemeBtn');
+mobileThemeToggle?.addEventListener('click', function() {
+    const isDark = document.documentElement.classList.toggle('dark-theme');
+    localStorage.setItem('feiniao-theme', isDark ? 'dark' : 'light');
+    document.body.classList.toggle('dark-theme', isDark);
+    syncThemeToggle(isDark ? 'dark' : 'light');
+});
+
+// 初始化主题图标
+const storedTheme = localStorage.getItem('feiniao-theme');
+if (storedTheme === 'dark') {
+    document.getElementById('mobileThemeIcon')?.classList.replace('fa-moon', 'fa-sun');
+}
+
+// 页面加载时检查登录状态
+document.addEventListener('DOMContentLoaded', checkNavUserStatus);
+</script>

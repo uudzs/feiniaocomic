@@ -1,0 +1,106 @@
+{extend name="base" /}
+{block name="title"}更新模块{/block}
+{block name="main"}
+<div class="layui-card">
+    <div class="layui-card-header">更新模块</div>
+    <div class="layui-card-body">
+        <form class="layui-form" method="post" enctype="multipart/form-data">
+            <div class="layui-form-item">
+                <label class="layui-form-label">选择模块</label>
+                <div class="layui-input-block">
+                    <select name="id" lay-verify="required" lay-search>
+                        <option value="">请选择要更新的模块</option>
+                        {volist name="modules" id="vo"}
+                        <option value="{$vo.id}">{$vo.title} ({$vo.name}) - {$vo.version}</option>
+                        {/volist}
+                    </select>
+                    <div class="layui-form-mid layui-word-aux">只能更新已安装且未启用的模块</div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">模块文件</label>
+                <div class="layui-input-block">
+                    <button type="button" class="layui-btn" id="uploadBtn">
+                        <i class="layui-icon">&#xe67c;</i>选择文件
+                    </button>
+                    <input type="file" name="file" id="moduleFile" style="display: none;" accept=".zip">
+                    <div class="layui-form-mid layui-word-aux">请上传模块压缩包（.zip格式）</div>
+                </div>
+            </div>
+            <div class="layui-form-item" id="fileInfo" style="display: none;">
+                <label class="layui-form-label">文件信息</label>
+                <div class="layui-input-block">
+                    <div class="layui-form-mid" id="fileName"></div>
+                    <div class="layui-form-mid" id="fileSize"></div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="updateSubmit">立即更新</button>
+                    <button type="button" class="layui-btn layui-btn-primary" onclick="parent.layer.closeAll()">取消</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name="javascript"}
+<script>
+layui.use(['form', 'upload', 'layer'], function(){
+    var form = layui.form;
+    var upload = layui.upload;
+    var layer = layui.layer;
+    const $ = layui.$;
+    $('#uploadBtn').on('click', function(){
+        $('#moduleFile').click();
+    });
+
+    $('#moduleFile').on('change', function(){
+        var file = this.files[0];
+        if(file){
+            $('#fileInfo').show();
+            $('#fileName').text('文件名：' + file.name);
+            $('#fileSize').text('文件大小：' + (file.size / 1024).toFixed(2) + ' KB');
+        }
+    });
+
+    form.on('submit(updateSubmit)', function(data){
+        var fileInput = document.getElementById('moduleFile');
+        if(fileInput.files.length === 0){
+            layer.msg('请选择模块文件', {icon: 2});
+            return false;
+        }
+
+        var formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+        formData.append('id', data.field.id);
+
+        layer.load();
+        $.ajax({
+            url: '{:url("module/update")}',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(res){
+                layer.closeAll('loading');
+                if(res.code === 200){
+                    layer.msg(res.msg, {icon: 1}, function(){
+                        parent.layer.closeAll();
+                        parent.layui.table.reload('moduleTable');
+                    });
+                } else {
+                    layer.msg(res.msg, {icon: 2});
+                }
+            },
+            error: function(){
+                layer.closeAll('loading');
+                layer.msg('更新失败，请重试', {icon: 2});
+            }
+        });
+
+        return false;
+    });
+});
+</script>
+{/block}

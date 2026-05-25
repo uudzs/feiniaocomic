@@ -1,0 +1,375 @@
+{extend name="base"/}
+{block name="title"}{$pageTitle}{/block} 
+{block name="main"} 
+<div class="c-form-content">
+    <form class="layui-form" enctype="multipart/form-data" method="post">  
+        <!-- 选项卡容器 -->
+        <div class="layui-tab layui-tab-card">
+              {if count($formTabs) > 1}
+            <!-- 选项卡标题 -->
+            <ul class="layui-tab-title">
+                {volist name="formTabs" id="tab" key="k"}
+                <li class="{if $k == 1}layui-this{/if}"  href="{$tab.name}"> 
+                    {$tab.title} 
+                </li>
+                {/volist}
+                <li> <button class="layui-btn" lay-submit lay-filter="c-verify">快速保存</button></li>
+            </ul>
+
+             {/if}
+            <!-- 选项卡内容 -->
+            <div class="layui-tab-content">
+                {volist name="formTabs" id="tab" key="k"}
+                <div class="layui-tab-item {if $k == 1}layui-show{/if}">
+                    {volist name="tab.fields" id="vo"}
+                       {php}
+                            $vo = array_merge([
+                                'type' => 'text',
+                                'name' => '',
+                                'nameid' => '',
+                                'title' => '',
+                                'required' => false,
+                                'verify' => '',
+                                'placeholder' => '',
+                                'options' => [],
+                                'extra' => [],
+                                'show' => '',
+                                'tips' => '',
+                                'default' => null
+                            ], $vo);
+                        {/php}
+                        
+
+                        <!-- 字段类型匹配 -->
+                        {switch name="vo.type"}
+                                {case value="hidden"}
+                                    <input type="hidden" name="{$vo.name}" id="{$vo.nameid}" {if isset($vo.value)}value="{$vo.value}"{else}value="{$SingData[$vo['name']]|default=''}"{/if}>
+                                {/case}
+                                {case value="select"}
+                                <div class="layui-form-item {$vo.extra.class|default=''}">
+                                    <label class="layui-form-label">
+                                        {if $vo.required}<span class="layui-text-red">*</span>{$vo.title}{else/}{$vo.title}{/if}
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <select name="{$vo.name}" lay-verify="{$vo.verify}">
+                                            <option value="0" >{$vo.placeholder|default='请选择'.$vo.title}</option>
+                                            {volist name="vo.options" id="opt"}
+                                            <option value="{$opt.id}" 
+                                                {if isset($SingData[$vo.name]) && $SingData[$vo.name] == $opt.id}
+                                                    selected
+                                                {elseif (empty($SingData) || !isset($SingData[$vo.name]))}
+                                                    {if isset($vo.use_parent_id) && $curPid == $opt.id}
+                                                        selected
+                                                    {elseif !isset($vo.use_parent_id) && $opt.id == 0}
+                                                        selected
+                                                    {/if}
+                                                {/if}>
+                                                {$opt.title}
+                                            </option>
+                                            {/volist}
+                                        </select>
+                                        {if isset($vo.tip) && $vo.tip}
+                                        <p><code>{$vo.tip}</code></p>
+                                        {/if}
+                                    </div>
+                                </div>
+                                {/case}
+    {case value="tagselect"}
+        {include file="public/tagselect"}
+    {/case}
+                                {case value="text"}
+                                    <div class="layui-form-item {$vo.extra.class|default=''}">
+                                        <label class="layui-form-label">
+                                            {if $vo.required}<span class="layui-text-red">*</span>{$vo.title}{else/}{$vo.title}{/if}
+                                        </label>
+                                        <div class="layui-input-block">
+                                            <input type="text" 
+                                                name="{$vo.name}" 
+                                                id="{$vo.nameid}" 
+                                                {if isset($vo.value)}
+                                                    value="{$vo.value}"
+                                                {else}
+                                                    value="{$SingData[$vo['name']]|default=''}"
+                                                {/if}
+                                                lay-verify="{$vo.verify}" 
+                                                placeholder="{$vo.placeholder|default='请输入'.$vo.title}" 
+                                                class="layui-input" 
+                                                maxlength="{$vo.extra.maxLength|default=255}">
+                                                {if isset($vo.tip) && $vo.tip}
+                                                <p><code>{$vo.tip}</code></p>
+                                                {/if}
+                                        </div>
+                                    </div>
+                                {/case}
+
+                                {case value="checkbox"}
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        {if $vo.required}<span class="layui-text-red">*</span>{/if}
+                                        {$vo.title}
+                                    </label>
+                                    <div class="layui-input-block"> 
+                                        {volist name="vo.options" id="opt"} 
+                                        <input type="checkbox" 
+                                            name="{$vo.name}[]"  
+                                            value="{$opt.id}" 
+                                            title="{$opt.title}"
+                                            {if isset($SingData[$vo.name]) && is_array($SingData[$vo.name]) && in_array($opt.id, $SingData[$vo.name])}
+                                                checked
+                                            {elseif isset($SingData[$vo.name]) && is_string($SingData[$vo.name]) && in_array($opt.id, explode(',', $SingData[$vo.name]))}
+                                                checked
+                                            {/if}>
+                                            {if isset($vo.tip) && $vo.tip}
+                                            <p><code>{$vo.tip}</code></p>
+                                            {/if}
+                                        {/volist}
+                                    </div>
+                                </div>
+                                {/case}
+
+                                {case value="radio"} 
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        {if $vo.required}<span class="required">*</span>{/if}
+                                        {$vo.title}
+                                    </label>
+                                    <div class="layui-input-block">
+                                        {volist name="vo.options" id="opt" key="index"}
+                                        <input type="radio" 
+                                            name="{$vo.name}" 
+                                            value="{$opt.value}" 
+                                            title="{$opt.title}"
+                                            {if isset($SingData[$vo.name])}
+                                                {$SingData[$vo.name] == $opt.value ? 'checked' : ''}
+                                            {else /}
+                                                {if isset($vo.value)}
+                                                    {$vo.value == $opt.value ? 'checked' : ''}
+                                                {else /}
+                                                    {$index == 1 ? 'checked' : ''}
+                                                {/if}
+                                            {/if}>
+                                            {if isset($vo.tip) && $vo.tip}
+                                            <p><code>{$vo.tip}</code></p>
+                                            {/if}
+                                        {/volist}
+                                    </div>
+                                </div>
+                            {/case}
+
+                            {case value="image"} 
+                                <div class="c-image-file layui-form-item">
+                                    <label class="layui-form-label">{$vo.title}</label>
+                                    <a class="file-btn layui-btn" data-field="{$vo.name}">
+                                        <i class="layui-icon">&#xe67c;</i>点击上传
+                                    </a>
+                                    <div class="layui-input-block">
+                                        <input type="text" 
+                                                name="{$vo.name}" 
+                                                class="layui-input" 
+                                                lay-verify="{$vo.verify}"
+                                                placeholder="{$vo.placeholder}"
+                                                value="{$SingData[$vo.name]|default=''}">
+                                    </div>
+                                    <!--始终保留预览容器 -->
+                                    <div class="c-file-res" style="display:{notempty name="SingData[$vo.name]"}inline-block{else}none{/notempty}">
+                                        <img src="{$SingData[$vo.name]|default=''}" alt="{$vo.title}" data-field="{$vo.name}"> 
+                                    </div>
+                                </div>
+                            {/case}
+
+                            {case value="images"} 
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">{$vo.title}</label>
+                                <div class="layui-input-block">
+                                    <button type="button" class="layui-btn layui-btn-normal" id="uploadBtn">
+                                        <i class="layui-icon">&#xe67c;</i>上传图片（最多10张）
+                                    </button>
+                                    <div class="layui-upload-list preview-list">
+                                        <div id="previewList" class="layui-clear"></div>
+                                    </div>
+                                    <input type="hidden" name="{$vo.name}" id="images" value="{if isset($SingData[$vo.name])}{$SingData[$vo.name]|implode=',', ###}{/if}">
+                                </div>
+                            </div>
+                            {/case}
+
+                            {case value="file"} 
+                                <div class="c-image-file layui-form-item">
+                                    <label class="layui-form-label">{$vo.title}</label>
+                                    <a class="upload-file layui-btn layui-btn-primary" data-field="{$vo.name}">
+                                        <i class="layui-icon">&#xe67c;</i>点击上传
+                                    </a>
+                                    <div class="layui-input-block">
+                                        <input type="text" 
+                                                name="{$vo.name}" 
+                                                class="layui-input" 
+                                                lay-verify="{$vo.verify}"
+                                                placeholder="{$vo.placeholder}"
+                                                value="{$SingData[$vo.name]|default=''}">
+                                                {if isset($vo.tip) && $vo.tip}
+                                                <p><code>{$vo.tip}</code></p>
+                                                {/if}
+                                    </div> 
+                                </div>
+                            {/case}
+
+                            {case value="textarea"} 
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label"> 
+                                        {$vo.title}
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <textarea name="{$vo.name}" 
+                                                lay-verify="{$vo.verify|default=''}" 
+                                                placeholder="{$vo.placeholder}" 
+                                                rows="{$vo.rows|default=''}" 
+                                                class="layui-textarea" 
+                                                maxlength="{$vo.maxlength|default=2000}">{$SingData[$vo.name]|default=''}</textarea>
+                                                {if isset($vo.tip) && $vo.tip}
+                                                <p><code>{$vo.tip}</code></p>
+                                                {/if}
+                                    </div>
+                                </div>
+                            {/case}
+
+                            {case value="editor"} 
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">{$vo.title}</label> 
+                                    <div class="layui-input-block">
+                                        <!-- 安全编辑提示 -->
+                                        <div class="editor-security-tips"> 
+                                            <i class="tip-icon">⚠️</i>
+                                            <span class="tip-text">
+                                            安全提示：本编辑器已启用安全策略，图片仅保留 src/alt/title 属性。建议先使用记事本净化内容后再粘贴。
+                                            </span>
+                                        </div> 
+                                        <textarea name="{$vo.name}" 
+                                                class="layui-textarea" 
+                                                id="{$vo.editor}">{$SingData[$vo.name]|default=''}</textarea>
+                                    </div> 
+                                </div>
+                            {/case}
+
+                            {case value="color"}
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        {if $vo.required}<span class="layui-text-red">*</span>{/if}
+                                        {$vo.title}
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <input type="text" 
+                                            name="{$vo.name}" 
+                                            id="colorPicker_{$vo.name}" 
+                                            value="{$SingData[$vo.name]|default=''}"
+                                            lay-verify="{$vo.verify}" 
+                                            placeholder="{$vo.placeholder|default='请选择颜色'}" 
+                                            class="layui-input"
+                                            style="width: 200px; display: inline-block;">
+                                        <div id="colorPickerBtn_{$vo.name}" style="display: inline-block; margin-left: 10px;">
+                                            <span class="layui-btn layui-btn-primary" style="background-color: {$SingData[$vo.name]|default='#fff'}; border: 1px solid #ccc; width: 38px; height: 38px; display: inline-block; vertical-align: middle;"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {/case}
+
+                            {case value="author"}
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">
+                                        {if $vo.required}<span class="layui-text-red">*</span>{/if}
+                                        {$vo.title}
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <select name="{$vo.name}" lay-verify="{$vo.verify}" lay-search>
+                                            <option value="">{$vo.placeholder|default='请选择或搜索作者'}</option>
+                                            {volist name="vo.options" id="opt"}
+                                            <option value="{$opt.id}" 
+                                                {if isset($SingData[$vo.name]) && $SingData[$vo.name] == $opt.id}selected{/if}>
+                                                {$opt.name}
+                                            </option>
+                                            {/volist}
+                                        </select>
+                                    </div>
+                                </div>
+                            {/case}
+ 
+                        {/switch}
+                    {/volist}
+                </div>
+                {/volist}
+
+                <div class="layui-form-item fixed-footer">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="c-verify">提交保存</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+ 
+        
+    </form>
+</div>
+{/block}
+
+{block name="editor"}
+    {if $hasEditor} 
+    {include file="public/ueditor"}
+    {/if} 
+{/block}
+
+{block name="css"}
+    {/* 图片上传样式动态加载 */}
+    {if $hasImage}
+    {css href="/static/js/cropperjs/cropper.min.css"}
+    {/if} 
+{/block}
+
+{block name="javascript"} 
+    {if $hasImage}
+        {js href="/static/js/cropperjs/cropper.min.js"}
+        {include file="public/uploadimg"}
+    {/if}
+  
+    {if $hasImages}
+        {include file="public/uploadimages"}
+    {/if}
+
+    <script>
+    layui.use(['colorpicker'], function(){
+        var colorpicker = layui.colorpicker;
+        
+        // 查找所有颜色选择器字段并初始化
+        var colorInputs = document.querySelectorAll('input[id^="colorPicker_"]');
+        colorInputs.forEach(function(input) {
+            var fieldName = input.id.replace('colorPicker_', '');
+            var btnId = 'colorPickerBtn_' + fieldName;
+            var initialColor = input.value || '#009688';
+            
+            // 初始化颜色选择器
+            colorpicker.render({
+                elem: '#' + btnId,
+                color: initialColor,
+                done: function(color){
+                    // 选择颜色后的回调
+                    input.value = color;
+                    // 更新按钮背景色
+                    var btnSpan = document.querySelector('#' + btnId + ' span');
+                    if (btnSpan) {
+                        btnSpan.style.backgroundColor = color;
+                    }
+                }
+            });
+            
+            // 监听输入框变化，更新颜色选择器
+            input.addEventListener('change', function() {
+                var newColor = this.value;
+                if (newColor) {
+                    var btnSpan = document.querySelector('#' + btnId + ' span');
+                    if (btnSpan) {
+                        btnSpan.style.backgroundColor = newColor;
+                    }
+                }
+            });
+        });
+    });
+    </script>
+{/block}

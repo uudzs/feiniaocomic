@@ -1,0 +1,154 @@
+{extend name="base" /}
+
+{block name="title"}权限分配{/block}
+
+{block name="main"}
+<!-- 卡片容器 -->
+<div class="layui-card">
+    <div class="layui-card-header">当前用户组：{{$group.title}}</div>
+    <div class="layui-card-body">
+        <form class="layui-form">
+            <!-- 全选区域 -->
+            <div class="royal-auth-select-all">
+                <input type="checkbox" lay-filter="checkAll" lay-skin="primary" title="全选">
+            </div>
+            
+            <!-- 权限树容器 -->
+            <div class="royal-auth-tree" id="royalAuthTree">
+                <!-- 树形结构通过JS动态生成 -->
+            </div>
+            
+            <!-- 表单操作 -->
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="savePerm">保存权限</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+
+{block name="javascript"}
+<script>
+layui.use(['form', 'jquery'], function(){
+    var form = layui.form,
+        $ = layui.$,
+        layer = layui.layer;
+
+    // 原始树形数据
+    var treeData = {$treeData|raw};
+
+    /* 生成树形HTML结构 */
+    function buildTreeHtml(data, level = 0) {
+        return data.map(node => {
+            const hasChildren = node.children?.length > 0;
+            return `
+            <div class="royal-auth-tree-node">
+                <div class="royal-auth-node-item" data-id="${node.id}">
+                    <span style="margin-left:${level * 20}px">
+                        ${hasChildren ? 
+                            `<i class="royal-auth-toggle layui-icon layui-icon-triangle-d"></i>` : 
+                            `<i class="royal-auth-spacer"></i>`}
+                        <input type="checkbox" name="perm" value="${node.id}" 
+                            ${node.checked ? 'checked' : ''}
+                            lay-skin="primary" lay-filter="permCheck">
+                        <span>${node.title} 【ID:${node.id}】</span>
+                    </span>
+                </div>
+                ${hasChildren ? 
+                    `<div class="royal-auth-children">${buildTreeHtml(node.children, level + 1)}</div>` : ''}
+            </div>`;
+        }).join('');
+    }
+
+    // 初始化树形结构
+    $('#royalAuthTree').html(buildTreeHtml(treeData));
+    form.render();
+
+    /* 节点展开/折叠事件 */
+    $('#royalAuthTree').on('click', '.royal-auth-toggle', function(){
+        const $children = $(this).closest('.royal-auth-tree-node').find('.royal-auth-children');
+        $children.toggle();
+        $(this).toggleClass('layui-icon-triangle-d layui-icon-triangle-r');
+    });
+
+    /* 全选控制 */
+    form.on('checkbox(checkAll)', function({elem}){
+        const state = elem.checked;
+        $('#royalAuthTree [type="checkbox"]').prop('checked', state);
+        form.render('checkbox');
+    });
+
+    /* 权限选择联动逻辑 */
+    form.on('checkbox(permCheck)', function(data){
+        const $node = $(data.elem).closest('.royal-auth-node-item');
+        // 同步子节点状态
+        $node.next('.royal-auth-children').find('[type="checkbox"]')
+            .prop('checked', data.elem.checked)
+            .trigger('change');
+        form.render('checkbox');
+        updateParentState($node);
+    });
+
+    /* 更新父节点状态 */
+    function updateParentState($node) {
+        const $parent = $node.closest('.royal-auth-children').prev('.royal-auth-node-item');
+        if (!$parent.length) return;
+
+        const $siblings = $parent.next('.royal-auth-children').find('[type="checkbox"]');
+        const allChecked = $siblings.length === $siblings.filter(':checked').length;
+        const $parentCheck = $parent.find('[type="checkbox"]')[0];
+
+        $parentCheck.checked = allChecked;
+        $parentCheck.indeterminate = !allChecked && $siblings.filter(':checked').length > 0;
+        updateParentState($parent);
+    }
+
+    /* 提交权限配置 */
+    form.on('submit(savePerm)', function(){
+        const checkedIds = [];
+        $('#royalAuthTree [type="checkbox"]:checked').each((i, el) => checkedIds.push(el.value));
+        
+        // 显示加载中状态
+        const loadIndex = layer.load(1, { shade: 0.3 });
+        
+        $.post('', {ruleIds: checkedIds.join(',')}, res => {
+            const success = res.code === 200;
+            
+            // 先关闭加载层
+            layer.close(loadIndex);
+            
+            // 显示操作结果提示
+            layer.msg(success ? '保存成功' : (res.msg || '保存失败'), {
+                icon: success ? 1 : 2,
+                time: 800
+            });
+            
+            if (success) {
+                // 正确关闭顺序：先关闭弹窗再刷新
+                const currentLayer = window.frameElement 
+                    ? window.frameElement.getAttribute('times') 
+                    : null;
+                
+                setTimeout(() => {
+                    if (currentLayer) {
+                        // 精确关闭当前弹窗
+                        layer.close(currentLayer);
+                    } else {
+                        // 降级处理
+                        parent.layer.closeAll();
+                    }
+                    location.reload();
+                }, 800);
+            }
+        }).fail(() => {
+            layer.close(loadIndex);
+            layer.msg('请求失败', {icon: 2});
+        });
+        
+        return false;
+    });
+});
+</script> 
+{/block}

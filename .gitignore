@@ -1,0 +1,10 @@
+/.idea
+/.vscode
+/.gitee
+*.log
+*.lock
+/.env
+/runtime/*
+/public/.user.ini
+/public/storage/*
+/modules/*

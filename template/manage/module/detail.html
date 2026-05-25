@@ -1,0 +1,80 @@
+{extend name="base" /}
+{block name="title"}模块详情{/block}
+{block name="main"}
+<div class="layui-card">
+    <div class="layui-card-header">模块详情 - {$module.title}</div>
+    <div class="layui-card-body">
+        <div class="layui-form">
+            <div class="layui-form-item">
+                <label class="layui-form-label">模块名称</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" value="{$module.name}" disabled>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">模块标题</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" value="{$module.title}" disabled>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">版本</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" value="{$module.version}" disabled>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">作者</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" value="{$module.author}" disabled>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">网址</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" value="{$module.url}" disabled>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">描述</label>
+                <div class="layui-input-block">
+                    <textarea class="layui-textarea" disabled>{$module.description}</textarea>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">状态</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" value="{$module.status_text}" disabled>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">安装时间</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" value="{$module.create_time}" disabled>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">更新时间</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" value="{$module.update_time}" disabled>
+                </div>
+            </div>
+            {notempty name="module.dependencies"}
+            <div class="layui-form-item">
+                <label class="layui-form-label">依赖模块</label>
+                <div class="layui-input-block">
+                    {volist name="module.dependencies" id="dep"}
+                    <span class="layui-badge layui-bg-blue">{$dep}</span>
+                    {/volist}
+                </div>
+            </div>
+            {/notempty}
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button type="button" class="layui-btn layui-btn-primary" onclick="parent.layer.closeAll()">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}

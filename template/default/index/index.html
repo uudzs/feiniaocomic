@@ -1,0 +1,410 @@
+{extend name="common/base" /}
+
+{block name="css"} 
+<link rel="stylesheet" href="{:theme_asset('static/css/index.css')}">
+{/block}
+
+{block name="header"}  
+{include file="common/header" /}
+{/block}
+
+{block name="main"}   
+<div class="main-page">
+    
+    <!-- Banner 轮播 -->
+    {if isset($comic.banners) && $comic.banners}
+    <div class="home-banner">
+        <div class="home-banner-slider">
+            {volist name="$comic.banners" id="banner" key="k"}
+            <div class="home-banner-slide {:$k == 1 ? 'active' : ''}">
+                <div class="home-banner-bg">
+                    <img src="{$banner.banner|default=$banner.cover}" alt="">
+                </div>
+                <div class="home-banner-content">
+                    <div class="home-banner-cover">
+                        <a href="{:url('comic_detail', ['id' => $banner.id])}">
+                            <img src="{$banner.cover}" alt="{$banner.title}">
+                        </a>
+                    </div>
+                    <div class="home-banner-info">
+                        <span class="home-banner-tag">{$banner.tags|default='编辑推荐'}</span>
+                        <h2 class="home-banner-title">{$banner.title}</h2>
+                        <p class="home-banner-desc">{$banner.summary|default='暂无简介'}</p>
+                        <a href="{:url('comic_detail', ['id' => $banner.id])}" class="home-banner-btn">
+                            <span>立即阅读</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {/volist}
+        </div>
+        <div class="home-banner-dots">
+            {volist name="$comic.banners" id="banner" key="k"}
+            <span class="home-banner-dot {:$k == 1 ? 'active' : ''}" data-index="{$k-1}"></span>
+            {/volist}
+        </div>
+    </div>
+    {/if}
+    
+    <!-- 分类入口 -->
+    {if isset($comic.cates) && $comic.cates}
+    <div class="home-cate-entry">
+        <div class="home-cate-entry-content">
+            <div class="home-cate-grid">
+                {volist name="$comic.cates" id="cate"}
+                <a href="{:furl('comic_filter_page', ['cate' => $cate.id, 'status' => 'all', 'tag' => '0', 'sort' => 'new', 'page' => 1])}" class="home-cate-item" style="--cate-hue: {php}echo rand(0, 360){/php}">
+                    <div class="home-cate-icon">
+                        <i class="{$cate.icon|default='fa-solid fa-folder'}"></i>
+                    </div>
+                    <span class="home-cate-name">{$cate.title}</span>
+                    <span class="home-cate-count">{$cate.comic_count|default=''}</span>
+                </a>
+                {/volist}
+            </div>
+        </div>
+    </div>
+    {/if}
+    
+    <!-- 热门搜索 -->
+    {if isset($comic.hotKeywords) && $comic.hotKeywords}
+    <div class="home-search-bar">
+        <div class="home-search-bar-content">
+            <h2 class="home-search-title">
+                <i class="fa-solid fa-fire"></i>
+                热门搜索
+            </h2>
+            <div class="home-search-tags">
+                {volist name="$comic.hotKeywords" id="keyword"}
+                <a href="{:furl('comic_search_page', ['keyword' => $keyword.keyword, 'page' => 1])}" class="home-search-tag">
+                    {$keyword.keyword}
+                    {if isset($keyword.search_count)}
+                    <span class="count">{$keyword.search_count}</span>
+                    {/if}
+                </a>
+                {/volist}
+            </div>
+        </div>
+    </div>
+    {/if}
+    
+    <!-- 主内容区 -->
+    <div class="home-main">
+        
+        <!-- 热门推荐 -->
+        {if isset($comic.hotComics) && $comic.hotComics}
+        <div class="home-section">
+            <div class="home-section-header">
+                <h2 class="home-section-title">
+                    <i class="fa-solid fa-fire"></i>
+                    热门推荐
+                </h2>
+                <a href="{:furl('comic_filter_page', ['cate' => '0', 'status' => 'all', 'tag' => '0', 'sort' => 'hot', 'page' => 1])}" class="home-section-more">
+                    <span>查看更多</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </a>
+            </div>
+            <div class="home-hot-grid">
+                {volist name="$comic.hotComics" id="item"}
+                <a href="{:furl('comic_detail', ['id' => $item.id])}" class="home-comic-card">
+                    <div class="home-card-cover">
+                        <img src="{$item.cover}" alt="{$item.title}" loading="lazy">
+                        <span class="home-card-badge {$item.update_status == '连载' ? 'ongoing' : 'completed'}">
+                            {$item.update_status}
+                        </span>
+                        {if $item.score > 0}
+                        <span class="home-card-score">{$item.score}分</span>
+                        {/if}
+                    </div>
+                    <div class="home-card-info">
+                        <div class="home-card-title">{$item.title}</div>
+                        <div class="home-card-author">{$item.author|default='未知作者'}</div>
+                        <div class="home-card-meta">
+                            <span><i class="fa-solid fa-eye"></i> {$item.view_count}</span>
+                            <span><i class="fa-solid fa-heart"></i> {$item.fav_count}</span>
+                        </div>
+                    </div>
+                </a>
+                {/volist}
+            </div>
+        </div>
+        {/if}
+        
+        <!-- 排行榜区域 -->
+        {if isset($comic.favRankComics) && $comic.favRankComics}
+        <div class="home-section">
+            <div class="home-section-header">
+                <h2 class="home-section-title">
+                    <i class="fa-solid fa-chart-line"></i>
+                    精选榜单
+                </h2>
+            </div>
+            <div class="home-rank-grid">
+                <!-- 人气榜 -->
+                <div class="home-rank-card">
+                    <div class="home-rank-header">
+                        <i class="fa-solid fa-heart"></i>
+                        <span>人气榜</span>
+                    </div>
+                    <div class="home-rank-list">
+                        {volist name="$comic.favRankComics" id="item" key="k"}
+                        <a href="{:furl('comic_detail', ['id' => $item.id])}" class="home-rank-item">
+                            <span class="home-rank-num {if $k == 1}top1{elseif $k == 2}top2{elseif $k == 3}top3{else}normal{/if}">{$k}</span>
+                            <div class="home-rank-thumb">
+                                <img src="{$item.cover}" alt="{$item.title}" loading="lazy">
+                            </div>
+                            <div class="home-rank-info">
+                                <div class="home-rank-title">{$item.title}</div>
+                                <div class="home-rank-meta">{$item.fav_count}收藏</div>
+                            </div>
+                        </a>
+                        {/volist}
+                    </div>
+                </div>
+                
+                <!-- 飙升榜 -->
+                {if isset($comic.soaringComics) && $comic.soaringComics}
+                <div class="home-rank-card">
+                    <div class="home-rank-header home-rank-header-orange">
+                        <i class="fa-solid fa-rocket"></i>
+                        <span>飙升榜</span>
+                    </div>
+                    <div class="home-rank-list">
+                        {volist name="$comic.soaringComics" id="item" key="k"}
+                        <a href="{:furl('comic_detail', ['id' => $item.id])}" class="home-rank-item">
+                            <span class="home-rank-num {if $k == 1}top1{elseif $k == 2}top2{elseif $k == 3}top3{else}normal{/if}">{$k}</span>
+                            <div class="home-rank-thumb">
+                                <img src="{$item.cover}" alt="{$item.title}" loading="lazy">
+                            </div>
+                            <div class="home-rank-info">
+                                <div class="home-rank-title">{$item.title}</div>
+                                <div class="home-rank-meta">{$item.view_count}点击</div>
+                            </div>
+                        </a>
+                        {/volist}
+                    </div>
+                </div>
+                {/if}
+                
+                <!-- 高分榜 -->
+                {if isset($comic.topRatedComics) && $comic.topRatedComics}
+                <div class="home-rank-card">
+                    <div class="home-rank-header home-rank-header-purple">
+                        <i class="fa-solid fa-star"></i>
+                        <span>高分榜</span>
+                    </div>
+                    <div class="home-rank-list">
+                        {volist name="$comic.topRatedComics" id="item" key="k"}
+                        <a href="{:furl('comic_detail', ['id' => $item.id])}" class="home-rank-item">
+                            <span class="home-rank-num {if $k == 1}top1{elseif $k == 2}top2{elseif $k == 3}top3{else}normal{/if}">{$k}</span>
+                            <div class="home-rank-thumb">
+                                <img src="{$item.cover}" alt="{$item.title}" loading="lazy">
+                            </div>
+                            <div class="home-rank-info">
+                                <div class="home-rank-title">{$item.title}</div>
+                                <div class="home-rank-meta">{$item.score}分</div>
+                            </div>
+                        </a>
+                        {/volist}
+                    </div>
+                </div>
+                {/if}
+                
+                <!-- 连载榜 -->
+                {if isset($comic.ongoingComics) && $comic.ongoingComics}
+                <div class="home-rank-card">
+                    <div class="home-rank-header home-rank-header-red">
+                        <i class="fa-solid fa-fire"></i>
+                        <span>连载榜</span>
+                    </div>
+                    <div class="home-rank-list">
+                        {volist name="$comic.ongoingComics" id="item" key="k"}
+                        <a href="{:furl('comic_detail', ['id' => $item.id])}" class="home-rank-item">
+                            <span class="home-rank-num {if $k == 1}top1{elseif $k == 2}top2{elseif $k == 3}top3{else}normal{/if}">{$k}</span>
+                            <div class="home-rank-thumb">
+                                <img src="{$item.cover}" alt="{$item.title}" loading="lazy">
+                            </div>
+                            <div class="home-rank-info">
+                                <div class="home-rank-title">{$item.title}</div>
+                                <div class="home-rank-meta">{$item.last_chapter|default='连载中'}</div>
+                            </div>
+                        </a>
+                        {/volist}
+                    </div>
+                </div>
+                {/if}
+                
+                <!-- 完结榜 -->
+                {if isset($comic.completedComics) && $comic.completedComics}
+                <div class="home-rank-card">
+                    <div class="home-rank-header home-rank-header-green">
+                        <i class="fa-solid fa-flag-checkered"></i>
+                        <span>完结榜</span>
+                    </div>
+                    <div class="home-rank-list">
+                        {volist name="$comic.completedComics" id="item" key="k"}
+                        <a href="{:furl('comic_detail', ['id' => $item.id])}" class="home-rank-item">
+                            <span class="home-rank-num {if $k == 1}top1{elseif $k == 2}top2{elseif $k == 3}top3{else}normal{/if}">{$k}</span>
+                            <div class="home-rank-thumb">
+                                <img src="{$item.cover}" alt="{$item.title}" loading="lazy">
+                            </div>
+                            <div class="home-rank-info">
+                                <div class="home-rank-title">{$item.title}</div>
+                                <div class="home-rank-meta">共{$item.chapter_count|default='0'}话</div>
+                            </div>
+                        </a>
+                        {/volist}
+                    </div>
+                </div>
+                {/if}
+            </div>
+        </div>
+        {/if}
+        
+        <!-- 编辑推荐 -->
+        {if isset($comic.recommendComics) && $comic.recommendComics}
+        <div class="home-section">
+            <div class="home-section-header">
+                <h2 class="home-section-title">
+                    <i class="fa-solid fa-thumbs-up"></i>
+                    编辑推荐
+                </h2>
+                <a href="{:furl('comic_filter_page', ['cate' => '0', 'status' => 'all', 'tag' => '0', 'sort' => 'recommend', 'page' => 1])}" class="home-section-more">
+                    <span>查看更多</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </a>
+            </div>
+            <div class="home-hot-grid">
+                {volist name="$comic.recommendComics" id="item"}
+                <a href="{:furl('comic_detail', ['id' => $item.id])}" class="home-comic-card">
+                    <div class="home-card-cover">
+                        <img src="{$item.cover}" alt="{$item.title}" loading="lazy">
+                        <span class="home-card-badge {$item.update_status == '连载' ? 'ongoing' : 'completed'}">
+                            {$item.update_status}
+                        </span>
+                        {if $item.score > 0}
+                        <span class="home-card-score">{$item.score}分</span>
+                        {/if}
+                    </div>
+                    <div class="home-card-info">
+                        <div class="home-card-title">{$item.title}</div>
+                        <div class="home-card-author">{$item.author|default='未知作者'}</div>
+                        <div class="home-card-meta">
+                            <span><i class="fa-solid fa-eye"></i> {$item.view_count}</span>
+                            <span><i class="fa-solid fa-heart"></i> {$item.fav_count}</span>
+                        </div>
+                    </div>
+                </a>
+                {/volist}
+            </div>
+        </div>
+        {/if}
+        
+        <!-- 热门标签 -->
+        {if isset($comic.hotTags) && $comic.hotTags}
+        <div class="home-section">
+            <div class="home-section-header">
+                <h2 class="home-section-title">
+                    <i class="fa-solid fa-hashtag"></i>
+                    热门标签
+                </h2>
+                <a href="{:furl('comic_filter')}" class="home-section-more">
+                    <span>全部标签</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </a>
+            </div>
+            <div class="home-tags-grid">
+                {volist name="$comic.hotTags" id="tag"}
+                <a href="{:furl('comic_filter_page', ['cate' => '0', 'status' => 'all', 'tag' => $tag.title, 'sort' => 'hot', 'page' => 1])}" class="home-tag-item">
+                    <i class="fa-solid fa-tag"></i>
+                    <span>{$tag.title}</span>
+                    <span class="count">{$tag.comic_count|default=0}</span>
+                </a>
+                {/volist}
+            </div>
+        </div>
+        {/if}
+        
+        <!-- 随机精选 -->
+        {if isset($comic.randomComics) && $comic.randomComics}
+        <div class="home-section">
+            <div class="home-section-header">
+                <h2 class="home-section-title">
+                    <i class="fa-solid fa-shuffle"></i>
+                    随机精选
+                </h2>
+                <a href="javascript:location.reload();" class="home-section-more">
+                    <span>换一批</span>
+                    <i class="fa-solid fa-rotate"></i>
+                </a>
+            </div>
+            <div class="home-random-grid">
+                {volist name="$comic.randomComics" id="item"}
+                <a href="{:furl('comic_detail', ['id' => $item.id])}" class="home-random-card">
+                    <div class="home-random-cover">
+                        <img src="{$item.cover}" alt="{$item.title}" loading="lazy">
+                    </div>
+                    <div class="home-random-title">{$item.title}</div>
+                </a>
+                {/volist}
+            </div>
+        </div>
+        {/if}
+        
+    </div>
+    
+    <!-- 最新更新 - 通栏 -->
+    {if isset($comic.latestComics) && $comic.latestComics}
+    <div class="home-latest-bar">
+        <div class="home-latest-content">
+            <div class="home-latest-header">
+                <h2 class="home-latest-title">
+                    <i class="fa-solid fa-clock"></i>
+                    最新更新
+                </h2>
+                <a href="{:furl('comic_filter_page', ['cate' => '0', 'status' => 'all', 'tag' => '0', 'sort' => 'new', 'page' => 1])}" class="home-latest-more">
+                    <span>更多</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </a>
+            </div>
+            <div class="home-latest-grid">
+                {volist name="$comic.latestComics" id="item"}
+                <a href="{:furl('comic_detail', ['id' => $item.id])}" class="home-latest-item">
+                    <div class="home-latest-thumb">
+                        <img src="{$item.cover}" alt="{$item.title}" loading="lazy">
+                        <span class="home-latest-badge {$item.update_status == '连载' ? 'ongoing' : 'completed'}">{$item.update_status}</span>
+                    </div>
+                    <div class="home-latest-info">
+                        <div class="home-latest-name">{$item.title}</div>
+                        <div class="home-latest-chapter">
+                            <i class="fa-solid fa-book"></i>
+                            {$item.last_chapter|default='最新章节'}
+                        </div>
+                        <div class="home-latest-meta">
+                            <span><i class="fa-solid fa-eye"></i> {$item.view_count}</span>
+                            <span class="time">{$item.updated_at|date='m-d'}</span>
+                        </div>
+                    </div>
+                </a>
+                {/volist}
+            </div>
+        </div>
+    </div>
+    {/if}
+    
+</div>
+{/block}
+
+{block name="footer"}  
+{include file="common/footer" /}
+{/block}
+
+{block name="js"}
+<script src="{:theme_asset('static/js/index.js')}"></script>
+{/block}
+
+{block name="script"}
+<script>
+console.log('飞鸟阅读 - 总首页');
+</script>
+{/block}

@@ -1,0 +1,143 @@
+<!-- 页脚 - 漫画阅读风格 -->
+<footer class="footer">
+    <div class="footer-container">
+        <!-- 上部：主要内容区 -->
+        <div class="footer-main">
+            <!-- 品牌介绍 -->
+            <div class="footer-brand">
+                <a href="/" class="footer-logo">
+                    <img src="{$ConfRes.logo|default='/static/images/logo.png'}" alt="{$ConfRes.sitename}">
+                    <span>{$ConfRes.sitename}</span>
+                </a>
+                <p class="footer-desc">{$ConfRes.sitename}是一个专注于提供优质漫画阅读体验的平台，汇聚海量热门漫画，支持在线阅读、收藏追更，让您随时随地畅享精彩漫画世界。</p>
+                <div class="footer-social">
+                    <a href="javascript:void(0);" title="微信" class="social-link">
+                        <i class="fa-brands fa-weixin"></i>
+                    </a>
+                    <a href="javascript:void(0);" title="微博" class="social-link">
+                        <i class="fa-brands fa-weibo"></i>
+                    </a>
+                    <a href="javascript:void(0);" title="QQ群" class="social-link">
+                        <i class="fa-brands fa-qq"></i>
+                    </a>
+                    <a href="javascript:void(0);" title="邮箱" class="social-link">
+                        <i class="fa-solid fa-envelope"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- 链接分组 -->
+            <div class="footer-links">
+                {if module_installed('comic')}
+                    <div class="footer-col">
+                        <h4 class="footer-title">热门分类</h4>
+                        <ul class="footer-list" id="hotCategories">
+                            <li><a href="javascript:void(0);">加载中...</a></li>
+                        </ul>
+                    </div>
+                {/if}
+                <div class="footer-col">
+                    <h4 class="footer-title">快速链接</h4>
+                    <ul class="footer-list">
+                        <li><a href="{:url('/')}">首页</a></li>
+                        <li><a href="{:furl('comic_index')}">漫画库</a></li>
+                        <li><a href="{:furl('user_index')}">个人中心</a></li>
+                        <li><a href="{:furl('user_favorites', ['page' => 1])}">我的书架</a></li>
+                        <li><a href="{:furl('user_historys', ['page' => 1])}">阅读历史</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h4 class="footer-title">帮助支持</h4>
+                    <ul class="footer-list">
+                        <li><a href="{:furl('single_page', ['id'=> 'about'])}">关于我们</a></li>
+                        <li><a href="{:furl('/contactus')}">联系我们</a></li>
+                        <li><a href="{:url('single_page', ['id'=> 'agreement'])}">用户协议</a></li>
+                        <li><a href="{:url('single_page', ['id'=> 'privacy'])}">隐私政策</a></li>
+                        <li><a href="{:url('single_page', ['id'=> 'faqs'])}">常见问题</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 中部：友情链接 -->
+        <div class="footer-friends">
+            <span class="friends-label">友情链接：</span>
+            <div class="friends-list">
+                {volist name="$App.linksData" id="link"}
+                <a href="{$link.url}" target="_blank" title="{$link.desc}">{$link.title}</a>
+                {/volist}
+            </div>
+        </div>
+        
+        <!-- 下部：版权信息 -->
+        <div class="footer-bottom">
+            <div class="footer-copyright">
+                <p>{$ConfRes.banquan|default='Copyright &copy; 2024 ' . $ConfRes.sitename . ' All Rights Reserved.'}</p>
+                <p class="footer-icp">{$ConfRes.icp|default=''}</p>
+            </div>
+            <div class="footer-stats">
+                <span><i class="fa-solid fa-book"></i> 海量内容</span>
+                <span><i class="fa-solid fa-bolt"></i> 极速更新</span>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- 返回顶部按钮 -->
+<button class="back-to-top" id="backToTop" title="返回顶部">
+    <i class="fa-solid fa-arrow-up"></i>
+</button>
+
+<script>
+    // 防止主题闪烁：在页面渲染前应用保存的主题
+    (async function () {
+        try {
+            const theme = await localStorage.getItem('feiniao-theme');
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark-theme');
+            }           
+        } catch (e) { }
+    })();
+    
+    // 返回顶部功能
+    document.addEventListener('DOMContentLoaded', function() {
+        const backToTop = document.getElementById('backToTop');
+        
+        // 滚动时显示/隐藏按钮
+        window.addEventListener('scroll', function() {
+            if (window.pageYOffset > 300) {
+                backToTop.classList.add('show');
+            } else {
+                backToTop.classList.remove('show');
+            }
+        });
+        
+        // 点击返回顶部
+        backToTop.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        (async function () {
+            try {                       
+                {if module_installed('comic')}
+                const result = await ApiClient.get(`{:furl('api/comic/categories')}`, {});
+                if (result.code == 200 && result.data && result.data.list) {
+                    const filterUrl = "{:furl('comic_filter_page', ['cate' => '[ID]', 'status' => 'all', 'tag' => '0', 'sort' => 'hot', 'page' => 1])}";
+                    var list = result.data.list.slice(0, 5);
+                    var html = '';
+                    list.forEach(function(item) {
+                        const url = filterUrl.replace('[ID]', item.id);
+                        html += '<li><a href="' + url + '">' + item.title + '</a></li>';
+                    });
+                    if (html) {
+                        document.getElementById('hotCategories').innerHTML = html;
+                    }
+                }
+                {/if}
+            } catch (e) { }
+        })();
+    });
+</script>

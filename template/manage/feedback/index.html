@@ -1,0 +1,249 @@
+{extend name="base" /}
+{block name="title"}意见反馈{/block}
+{block name="css"}
+<style>
+/* 反馈页面样式 */
+.feedback-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.feedback-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    padding: 30px;
+}
+
+.feedback-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.feedback-header h2 {
+    margin: 0 0 10px 0;
+    font-size: 20px;
+    color: #333;
+}
+
+.feedback-header p {
+    margin: 0;
+    color: #999;
+    font-size: 13px;
+}
+
+.feedback-type {
+    margin-bottom: 20px;
+}
+
+.feedback-type .layui-form-radio {
+    margin: 0 15px 10px 0;
+}
+
+.feedback-content {
+    margin-bottom: 20px;
+}
+
+.feedback-tips {
+    background: #f5f5f5;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+}
+
+.feedback-tips p {
+    margin: 0;
+    color: #666;
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+.feedback-tips p strong {
+    color: #333;
+}
+
+.feedback-submit {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.feedback-submit .layui-btn {
+    width: 200px;
+    height: 44px;
+    line-height: 44px;
+    font-size: 16px;
+}
+
+.feedback-success {
+    text-align: center;
+    padding: 50px 20px;
+}
+
+.feedback-success .layui-icon {
+    font-size: 60px;
+    color: #52c41a;
+}
+
+.feedback-success h3 {
+    margin: 20px 0 10px;
+    font-size: 18px;
+    color: #333;
+}
+
+.feedback-success p {
+    color: #999;
+    font-size: 14px;
+}
+
+.char-count {
+    text-align: right;
+    color: #999;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.char-count.warning {
+    color: #ff5722;
+}
+</style>
+{/block}
+
+{block name="main"}
+<div class="layui-body">
+    {include file="public/menu" /}
+    <div class="layui-fluid">
+        <div class="layui-row">
+            <div class="layui-col-md12">
+                <div class="feedback-container">
+                    <div class="feedback-card">
+                        <!-- 反馈表单 -->
+                        <div id="feedback-form-box">
+                            <div class="feedback-header">
+                                <h2><i class="layui-icon layui-icon-survey" style="font-size: 24px; color: #1e9fff; vertical-align: middle; margin-right: 8px;"></i>意见反馈</h2>
+                                <p>您的反馈是我们改进的动力，让我们做得更好</p>
+                            </div>
+
+                            <div class="feedback-tips">
+                                <p><strong>反馈须知：</strong></p>
+                                <p>• 意见反馈：您在使用过程中遇到的问题或不满</p>
+                                <p>• 功能建议：对产品功能改进的想法或建议</p>
+                                <p>• 二开需求：定制开发或二次开发的需求</p>
+                            </div>
+
+                            <form class="layui-form" id="feedback-form">
+                                <!-- 反馈类型 -->
+                                <div class="feedback-type">
+                                    <label class="layui-form-label"><span class="required">*</span>反馈类型：</label>
+                                    <div class="layui-input-block">
+                                        {volist name="typeOptions" id="vo"}
+                                        <input type="radio" name="type" value="{$vo.value}" title="{$vo.label}" {eq name="key" value="0"}checked{/eq}>
+                                        {/volist}
+                                    </div>
+                                </div>
+
+                                <!-- 反馈内容 -->
+                                <div class="feedback-content">
+                                    <label class="layui-form-label"><span class="required">*</span>反馈内容：</label>
+                                    <div class="layui-input-block">
+                                        <textarea name="content" id="feedback-content" class="layui-textarea" rows="8" placeholder="请详细描述您的问题或建议（至少10个字符）"></textarea>
+                                        <div class="char-count" id="char-count">0 / 5000</div>
+                                    </div>
+                                </div>
+
+                                <!-- 联系方式 -->
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">联系方式：</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="contact" class="layui-input" style="width: 300px;" placeholder="请输入QQ/微信/邮箱（选填）">
+                                    </div>
+                                </div>
+
+                                <!-- 提交按钮 -->
+                                <div class="feedback-submit">
+                                    <button type="submit" class="layui-btn layui-btn-normal" lay-submit lay-filter="submit-feedback">
+                                        <i class="layui-icon layui-icon-release"></i> 提交反馈
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- 提交成功 -->
+                        <div id="feedback-success-box" style="display: none;">
+                            <div class="feedback-success">
+                                <i class="layui-icon layui-icon-ok-circle"></i>
+                                <h3>反馈提交成功！</h3>
+                                <p>感谢您的反馈，我们会认真处理您的问题和建议</p>
+                                <div style="margin-top: 30px;">
+                                    <button type="button" class="layui-btn layui-btn-normal" onclick="location.reload()">继续反馈</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{/block}
+
+{block name="javascript"}
+<script>
+layui.use(['form', 'layer'], function(){
+    var $ = layui.$;
+    var form = layui.form;
+    var layer = layui.layer;
+
+    // 字符计数
+    $('#feedback-content').on('input', function(){
+        var len = $(this).val().length;
+        var $count = $('#char-count');
+        $count.text(len + ' / 5000');
+        if (len > 5000) {
+            $count.addClass('warning');
+        } else {
+            $count.removeClass('warning');
+        }
+    });
+
+    // 提交表单
+    form.on('submit(submit-feedback)', function(data){
+        var content = data.field.content;
+        
+        if (content.length < 10) {
+            layer.msg('反馈内容至少10个字符', {icon: 0});
+            return false;
+        }
+
+        if (content.length > 5000) {
+            layer.msg('反馈内容不能超过5000字符', {icon: 0});
+            return false;
+        }
+
+        var loadIndex = layer.msg('正在提交...', {icon: 16, shade: 0.3, time: 0});
+
+        $.ajax({
+            url: '{:url("manage/feedback/submit")}',
+            type: 'POST',
+            data: data.field,
+            success: function(res){
+                layer.close(loadIndex);
+                if (res.code === 200) {
+                    $('#feedback-form-box').hide();
+                    $('#feedback-success-box').show();
+                } else {
+                    layer.msg(res.msg || '提交失败', {icon: 2});
+                }
+            },
+            error: function(){
+                layer.close(loadIndex);
+                layer.msg('网络错误，请稍后重试', {icon: 2});
+            }
+        });
+
+        return false;
+    });
+});
+</script>
+{/block}

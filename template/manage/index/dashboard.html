@@ -1,0 +1,210 @@
+{extend name="base" /}
+{block name="title"}{:lang('admin_home')}{/block}
+
+{block name="main"}
+<div class="layui-layout layui-layout-admin">
+    {include file="public/menu" /}
+
+    <!-- 主体内容 -->
+    <div class="layui-body c-home-body">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md12"> 
+                <div class="c-news-card"> 
+                    <div class="c-news-icon">
+                        <i class="layui-icon layui-icon-notice"></i>
+                    </div>
+                    <div class="c-news-container">
+                        <div class="c-news-list">
+                            {notempty name="$latestNews"}
+                            {foreach $latestNews as $news}
+                            <div class="c-news-item">
+                                <span class="c-news-time">【 {$news.time} 】</span>
+                                <span class="c-news-content">{$news.content}</span>
+                            </div>
+                            {/foreach}
+                            {/notempty}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md9">
+                <!-- 数据概览卡片 -->
+                <div class="c-home-data layui-card">
+                    <div class="layui-card-header c-card-header">
+                        <i class="layui-icon layui-icon-chart"></i>
+                        {$pageTitles.website_data_overview}
+                    </div>
+                    <div class="layui-card-body">
+                        <!-- 按模块分组的折叠面板 -->
+                        <div class="layui-collapse">
+                            {foreach $cardsConfig as $group}
+                            <div class="layui-colla-item c-module-group">
+                                <h2 class="layui-colla-title">
+                                    <span class="c-module-title">{$group.title}</span>
+                                    <span class="c-module-count">{$group.cards|count} 项数据</span>
+                                </h2>
+                                <div class="layui-colla-content {if !$group.collapsed}layui-show{/if}">
+                                    <div class="layui-row layui-col-space15">
+                                        {foreach $group.cards as $card}
+                                        <div class="c-data-card layui-col-xs6 layui-col-sm3 layui-col-md3">
+                                            <a href="{$card.url}" class="c-data-card-link">
+                                                <div class="c-data-icon" style="color: {$card.color}">
+                                                    <i class="layui-icon {$card.icon}"></i>
+                                                </div>
+                                                <div class="c-data-info">
+                                                    <div class="c-data-count">
+                                                        {if isset($card.is_string) && $card.is_string}
+                                                            {$card.count}
+                                                        {else}
+                                                            {$card.count|number_format=0}
+                                                        {/if}
+                                                    </div>
+                                                    <div class="c-data-title">{$card.title}</div>
+                                                    {if isset($card.trend) && $card.trend}
+                                                    <div class="c-data-trend" style="color: {$card.trend_color|default='#52c41a'}">
+                                                        {$card.trend}
+                                                    </div>
+                                                    {/if}
+                                                </div>
+                                            </a>
+                                        </div>
+                                        {/foreach}
+                                    </div>
+                                </div>
+                            </div>
+                            {/foreach}
+                        </div>
+                    </div>
+                </div>
+                <!-- 程序信息 -->
+                <div class="layui-card c-program-card">
+                    <div class="layui-card-header c-card-header">
+                        <i class="layui-icon layui-icon-console"></i>
+                        {$pageTitles.system_information}
+                    </div>
+                    <div class="layui-card-body c-program-body">
+                        <ul class="c-program-list">
+                            <li class="c-program-item">
+                                <div class="c-program-label">{$jsLang.system_version}</div>
+                                <div class="c-program-value">{$system_info.os}</div>
+                            </li>
+                            <li class="c-program-item">
+                                <div class="c-program-label">{$jsLang.php_version}</div>
+                                <div class="c-program-value">{$system_info.php_version}</div>
+                            </li>
+                            <li class="c-program-item">
+                                <div class="c-program-label">{$jsLang.server_software}</div>
+                                <div class="c-program-value">{$system_info.server_software}</div>
+                            </li>
+                            <li class="c-program-item">
+                                <div class="c-program-label">{$jsLang.database}</div>
+                                <div class="c-program-value">{$system_info.database}</div>
+                            </li> 
+                            <li class="c-program-item">
+                                <div class="c-program-label">{$jsLang.login_ip}</div>
+                                <div class="c-program-value">{$system_info.remote_ip}</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 右侧边栏 -->
+            <div class="layui-col-md3 c-sidebar">
+
+                <!-- 捐赠支持 -->
+                <div class="layui-card c-sidebar-card">
+                    <div class="layui-card-header c-card-header">
+                        <i class="layui-icon layui-icon-heart"></i>
+                        捐赠支持
+                    </div>
+                    <div class="layui-card-body c-sidebar-body" style="text-align:center;">
+                        <div style="margin-bottom:10px;color:#666;font-size:13px;">您的捐赠将帮助我们持续改进产品</div>
+                        <div style="display:flex;gap:15px;justify-content:center;flex-wrap:wrap;">
+                            <div>
+                                <div style="margin-bottom:5px;font-size:12px;color:#999;">微信1</div>
+                                <img src="https://www.paheng.com/static/image/zfb.png" class="c-donate-btn" style="width:120px;height:160px;border:1px solid #eee;border-radius:4px;" alt="感谢您给作者的鼓励">
+                            </div>
+                            <div>
+                                <div style="margin-bottom:5px;font-size:12px;color:#999;">微信2</div>
+                                <img src="https://www.paheng.com/static/image/wx.png" class="c-donate-btn" style="width:120px;height:160px;border:1px solid #eee;border-radius:4px;" alt="感谢您给作者的鼓励">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 联系我们 -->
+                <div class="layui-card c-sidebar-card">
+                    <div class="layui-card-header c-card-header">
+                        <i class="layui-icon layui-icon-community"></i>
+                        联系我们
+                    </div>
+                    <div class="layui-card-body c-sidebar-body">
+                        <ul class="c-contact-list">
+                            <li class="c-contact-item">
+                                <span class="c-contact-icon" style="color:#07c160;"><i class="layui-icon layui-icon-home"></i></span>
+                                <span class="c-contact-label">官网</span>
+                                <a href="https://feiniao.paheng.net" target="_blank" class="c-contact-value">https://feiniao.paheng.net</a>
+                            </li>
+                            <li class="c-contact-item c-contact-qq">
+                                <div class="c-contact-left">
+                                    <span class="c-contact-icon" style="color:#1296db;"><i class="layui-icon layui-icon-group"></i></span>
+                                    <span class="c-contact-label">QQ群</span>
+                                    <a href="https://qm.qq.com/q/5fSJJ4jRoA" class="c-contact-value">177260545</a>
+                                </div>
+                                <div class="c-contact-right">
+                                    <img class="c-donate-btn c-qq-qrcode" src="https://www.paheng.com/static/image/feiniao/qq.png" alt="扫码加入群聊">
+                                </div>
+                            </li>
+                            <li class="c-contact-item">
+                                <span class="c-contact-icon" style="color:#1890ff;"><i class="layui-icon layui-icon-email"></i></span>
+                                <span class="c-contact-label">邮箱</span>
+                                <a href="mailto:888@paheng.com" class="c-contact-value">888@paheng.com</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- APP体验 -->
+                <div class="layui-card c-sidebar-card">
+                    <div class="layui-card-header c-card-header">
+                        <i class="layui-icon layui-icon-scan"></i>
+                        APP体验
+                    </div>
+                    <div class="layui-card-body c-sidebar-body" style="text-align:center;">
+                        <div style="margin-bottom:8px;color:#666;font-size:13px;">扫码体验安卓版APP</div>
+                        <img src="http://www.paheng.com/static/image/feiniao/comic/feiniao_cimic_v1_0_0.apk.png" class="c-donate-btn" style="width:140px;height:140px;border:1px solid #eee;border-radius:4px;" alt="扫码体验安卓版APP">
+                    </div>
+                </div>
+
+            </div>
+        </div>        
+ 
+    </div>
+    
+</div>
+ 
+{/block}
+  {block name="javascript"}
+ 
+<script>
+layui.use(['layer', 'jquery', 'carousel', 'element'], function(){
+    var layer = layui.layer;
+    var $ = layui.jquery;
+ 
+    // 图片弹窗（捐赠码、二维码等）
+    $('.c-donate-btn').on('click', function(){
+        var src = $(this).attr('src');
+        var title = $(this).attr('alt');
+        layer.open({
+            type: 1,
+            title: title,
+            area: ['350px', '400px'],
+            content: '<div style="padding:15px;text-align:center;"><img src="' + src + '" style="max-width:100%;max-height:320px;border-radius:4px;"></div>',
+        });
+    });
+
+});
+</script>
+
+{/block}

@@ -1,0 +1,218 @@
+{extend name="base" /}
+{block name="title"}测试管理{/block}
+{block name="main"}
+<div class="layui-body">
+	{include file="public/menu" /}
+
+	<div class="c-flex-content has-nav">
+
+		<div class="c-content" style=" max-height:calc(100vh - 90px);overflow-x: hidden;padding-left: 0;">
+			<div class="layui-card">
+				<div class="layui-card-header">
+					<i class="layui-icon layui-icon-console"></i> Debug 模式设置
+				</div>
+				<div class="layui-card-body">
+					<div class="layui-form">
+						<div class="layui-form-item">
+							<label class="layui-form-label">当前状态</label>
+							<div class="layui-input-block">
+								<input type="checkbox" name="debug_status" lay-skin="switch" lay-text="开启|关闭" 
+									{$debugStatus == 1 ? 'checked' : ''} lay-filter="debugSwitch">
+							</div>
+						</div>
+						
+						<div class="layui-form-item">
+							<label class="layui-form-label"></label>
+							<div class="layui-input-block">
+								<div class="layui-form-mid layui-word-aux">
+									<p><strong>说明：</strong></p>
+									<p>• 开启 Debug 模式后，系统会显示详细的错误信息和调试信息</p>
+									<p>• 关闭 Debug 模式后，系统只显示友好的错误提示</p>
+									<p>• 生产环境建议关闭 Debug 模式，以提高系统安全性和性能</p>
+									<p>• 修改后会立即生效，无需重启服务</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="layui-card" style="margin-top: 20px;">
+				<div class="layui-card-header">
+					<i class="layui-icon layui-icon-tips"></i> 注意事项
+				</div>
+				<div class="layui-card-body">
+					<div class="layui-text">
+						<ul>
+							<li>请确保 .env 文件具有写入权限（建议权限：644 或 664）</li>
+							<li>如果无法修改，请检查服务器文件权限设置</li>
+							<li>建议在修改前备份 .env 文件</li>
+							<li>Debug 模式开启时，系统可能会暴露敏感信息，请谨慎使用</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			
+			<div class="layui-card" style="margin-top: 20px;">
+				<div class="layui-card-header">
+					<i class="layui-icon layui-icon-email"></i> 邮箱发送测试
+				</div>
+				<div class="layui-card-body">
+					<div class="layui-form">
+						<div class="layui-form-item">
+							<label class="layui-form-label">收件人邮箱</label>
+							<div class="layui-input-block">
+								<input type="text" name="email_to" id="email_to" placeholder="请输入收件人邮箱" class="layui-input">
+							</div>
+						</div>
+						
+						<div class="layui-form-item">
+							<label class="layui-form-label">邮件主题</label>
+							<div class="layui-input-block">
+								<input type="text" name="email_subject" id="email_subject" value="测试邮件" class="layui-input">
+							</div>
+						</div>
+						
+						<div class="layui-form-item">
+							<label class="layui-form-label">邮件内容</label>
+							<div class="layui-input-block">
+								<textarea name="email_content" id="email_content" placeholder="请输入邮件内容" class="layui-textarea" rows="4">这是一封测试邮件，用于验证邮箱配置是否正确。</textarea>
+							</div>
+						</div>
+						
+						<div class="layui-form-item">
+							<label class="layui-form-label"></label>
+							<div class="layui-input-block">
+								<button type="button" class="layui-btn layui-btn-normal" id="sendTestEmail">
+									<i class="layui-icon layui-icon-release"></i> 发送测试邮件
+								</button>
+								<button type="button" class="layui-btn layui-bg-orange" id="checkEmailConfig" style="margin-left: 10px;">
+									<i class="layui-icon layui-icon-set-fill"></i> 检查配置
+								</button>
+								<a href="{:url('conf/conf', ['model' => $email['id'] ?? 0])}" class="layui-btn"><i class="layui-icon layui-icon-link"></i> 前往配置</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{/block}
+
+{block name="javascript"}
+<script>
+layui.use(['form', 'layer'], function() {
+	var form = layui.form;
+	var layer = layui.layer;
+	const $ = layui.$;
+	// 监听开关切换
+	form.on('switch(debugSwitch)', function(data) {
+		var status = data.elem.checked ? 1 : 0;
+		var statusText = status ? '开启' : '关闭';
+		
+		// 确认对话框
+		layer.confirm('确定要' + statusText + ' Debug 模式吗？', {
+			btn: ['确定', '取消'],
+			icon: 3
+		}, function(index) {
+			// 发送请求
+			$.post('{:url("debug/toggle")}', {status: status}, function(res) {
+				if (res.code === 200) {
+					layer.msg(res.msg, {icon: 1});
+					// 刷新页面以应用新设置
+					setTimeout(function() {
+						location.reload();
+					}, 1000);
+				} else {
+					layer.msg(res.msg, {icon: 2});
+					// 恢复开关状态
+					data.elem.checked = !data.elem.checked;
+					form.render('checkbox');
+				}
+			}).fail(function() {
+				layer.msg('请求失败，请检查网络或权限', {icon: 2});
+				// 恢复开关状态
+				data.elem.checked = !data.elem.checked;
+				form.render('checkbox');
+			});
+		}, function(index) {
+			// 取消操作，恢复开关状态
+			data.elem.checked = !data.elem.checked;
+			form.render('checkbox');
+			layer.close(index);
+		});
+		
+		return false;
+	});
+	
+	// 检查邮箱配置
+	$('#checkEmailConfig').on('click', function() {
+		layer.load(2);
+		$.get('{:url("debug/getEmailConfig")}', function(res) {
+			layer.closeAll('loading');
+			if (res.code === 200) {
+				var config = res.data;
+				var configStr = '';
+				for (var key in config) {
+					configStr += key + ': ' + config[key] + "<br>";
+				}
+				layer.alert('邮箱配置信息：' + "<br>" + configStr, {
+					title: '邮箱配置',
+					icon: 1
+				});
+			} else {
+				layer.msg(res.msg, {icon: 2});
+			}
+		}).fail(function() {
+			layer.closeAll('loading');
+			layer.msg('请求失败，请检查网络或权限', {icon: 2});
+		});
+	});
+	
+	// 发送测试邮件
+	$('#sendTestEmail').on('click', function() {
+		var to = $('#email_to').val().trim();
+		var subject = $('#email_subject').val().trim();
+		var content = $('#email_content').val().trim();
+		
+		if (!to) {
+			layer.msg('请输入收件人邮箱', {icon: 2});
+			return;
+		}
+		
+		// 验证邮箱格式
+		var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		if (!emailRegex.test(to)) {
+			layer.msg('邮箱格式不正确', {icon: 2});
+			return;
+		}
+		
+		layer.confirm('确定要发送测试邮件到 ' + to + ' 吗？', {
+			btn: ['确定', '取消'],
+			icon: 3
+		}, function(index) {
+			layer.load(2);
+			// 发送请求
+			$.post('{:url("debug/sendTestEmail")}', {
+				to: to,
+				subject: subject,
+				content: content
+			}, function(res) {
+				layer.closeAll('loading');
+				if (res.code === 200) {
+					layer.msg(res.msg, {icon: 1});
+				} else {
+					layer.msg(res.msg, {icon: 2});
+				}
+			}).fail(function() {
+				layer.closeAll('loading');
+				layer.msg('请求失败，请检查网络或权限', {icon: 2});
+			});
+		}, function(index) {
+			layer.close(index);
+		});
+	});
+});
+</script>
+{/block}

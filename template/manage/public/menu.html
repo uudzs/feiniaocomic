@@ -1,0 +1,124 @@
+        <!-- 顶部导航 -->
+        <div class="layui-header">
+         
+            <!-- 后台logo -->
+            <div class="c-logo layui-logo">
+                <a href="{:url('index/dashboard')}">
+                    <span>飞鸟阅读</span>
+                </a> 
+            </div>
+            <!-- 后台logo END-->
+
+           <!-- CMS版本号 -->
+            <ul class="layui-nav layui-layout-left">
+                <li class="layui-nav-item" style="display: none;">
+                    {if defined('CURRENT_LANG') && constant('CURRENT_LANG') === 'en-us'}
+                    <span class="layui-badge layui-bg-blue" style="position: relative;top: 0;">English</span> 
+                    {else}
+                    <span class="layui-badge layui-bg-green" style="position: relative;top: 0;">中文</span>  
+                    {/if}  
+                     <dl class="layui-nav-child"> 
+                        {if defined('CURRENT_LANG') && constant('CURRENT_LANG') === 'zh-cn'}
+                            <dd>
+                                <a href="javascript:;" 
+                                data-lang="en-us" 
+                                data-url="{:url('language/switch')}"
+                                class="lang-btn"
+                                >English</a>
+                            </dd>
+                        {else}
+                            <dd>
+                                <a href="javascript:;" 
+                                data-lang="zh-cn" 
+                                data-url="{:url('language/switch')}"
+                                class="lang-btn"
+                                >中文后台</a>
+                            </dd>
+                        {/if}  
+                    </dl>
+                </li>  
+            </ul>
+
+            <!-- 后台常用功能 -->
+            <ul class="layui-nav layui-layout-right"> 
+                <li class="layui-nav-item">
+                    <span class="layui-badge-dot layui-bg-green"></span>
+                    <a href="/" target="_blank">
+                        <span>{$Think.lang.index_home}</span>
+                    </a>
+                </li>  
+                <li class="layui-nav-item">
+                    <a href="{:url('feedback/index')}">
+                        <i class="layui-icon layui-icon-survey"></i>
+                        <span>意见反馈</span>
+                    </a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;" class="c-layer-msg" data-url="{:url('common/clearCache')}" >
+                        <i class="layui-icon layui-icon-fonts-clear"></i>
+                        <span>{$Think.lang.clear_cache}</span>
+                    </a>
+                </li>                
+               
+                <li class="layui-nav-item">
+                    <a>
+                        <img src="{$CurUserInfo.thumb}" class="layui-nav-img" onerror="this.src='/static/images/data-none.png'">
+                        <span>{$CurUserInfo.nickname}</span>
+                    </a> 
+                </li>
+               
+                <li class="layui-nav-item">
+                    <a href="javascript:;" class="c-confirm" url="{:url('login/logout')}" title="{$Think.lang.logout_alert}" icon="3">
+                        <i class="layui-icon layui-icon-logout"></i>
+                        <span>{$Think.lang.logout}</span>
+                    </a>
+                </li>
+            </ul>
+            <!-- 后台常用功能 END-->
+
+        </div>
+        <!-- 顶部导航 END-->
+        <style>
+        .layui-nav-child {
+            padding: 0;
+        }
+        </style>
+        <!-- 左侧导航 -->
+        <div class="layui-side layui-bg-black">
+            <div class="layui-side-scroll">
+                <ul class="layui-nav layui-nav-tree" lay-accordion>
+
+                    <li class="layui-nav-item">
+                        <a href="{:url('index/dashboard')}">
+                            <i class="layui-icon layui-icon-home"></i>
+                            <span>{$Think.lang.admin_home}</span>
+                            <span class="layui-badge-dot layui-bg-green"></span>
+                        </a>
+                    </li>
+
+                    {volist name="AuthMenu" id="vo"}     
+                    <li class="layui-nav-item{if !empty($vo.children)}{if $vo.expanded} layui-nav-itemed{/if}{/if}{if $vo.active && empty($vo.children)} layui-this{/if}">
+                        {if empty($vo.children)}
+                        <a href="{:url($vo.rule)}">
+                            <i class="layui-icon {$vo.icon}"></i>
+                            <span>{$vo.title}</span>
+                        </a>
+                        {else}
+                        <a href="javascript:;">
+                            <i class="layui-icon {$vo.icon}"></i>
+                            <span>{$vo.title}</span>
+                        </a>
+                        <dl class="layui-nav-child">
+                            {volist name="vo.children" id="child"}
+                            <dd class="{if $child.active}layui-this{/if}">
+                                <a href="{:url($child.rule)}">{$child.title}</a>
+                            </dd>
+                            {/volist}
+                        </dl>
+                        {/if}
+                    </li>
+                    {/volist}                   
+                </ul>
+            </div>
+        </div>
+        <!-- 左侧导航 END -->

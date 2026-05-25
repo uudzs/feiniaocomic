@@ -1,0 +1,111 @@
+{extend name="base" /}
+
+{block name="title"}添加用户{/block}
+
+{block name="main"}
+<div class="c-form">
+    <form class="layui-form" enctype="multipart/form-data" method="post">
+
+        <!--—————————————————————————————————————————————————
+            用户组选择区域
+        ——————————————————————————————————————————————————-->
+        <div class="layui-form-item">
+            <label class="layui-form-label" for="groupid">所属用户</label>
+            <div class="layui-input-block">
+                <select name="groupid" lay-verify="required">
+                    {volist name="GroupRes" id="vo"}
+                    <option value="{$vo.id}" {if $groupid eq $vo.id}selected{/if}> {$vo.title} </option>
+                    {/volist}
+                </select>
+            </div>
+        </div>
+
+        <!--—————————————————————————————————————————————————
+            账号信息输入区域
+        ——————————————————————————————————————————————————-->
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-text-red" for="uname">*用户账号</label>
+            <div class="layui-input-block">
+                <input type="text" name="uname" id="uname" 
+                       class="layui-input layui-text-red" 
+                       lay-verify="required" 
+                       placeholder="账号为字母和数字组合">
+            </div>
+        </div>
+
+        <!--—————————————————————————————————————————————————
+            头像上传区域
+        ——————————————————————————————————————————————————-->
+        <!-- <div class="c-image-file layui-form-item">
+            <label class="layui-form-label" for="thumb">用户头像</label>
+            <a class="file-btn layui-btn" data-field="thumb">
+                <i class="layui-icon">&#xe67c;</i>上传图片
+            </a>
+            <div class="layui-input-block">
+                <input type="text" name="thumb" id="thumb" 
+                       class="layui-input" 
+                       placeholder="请上传128px*128px的图片" >
+            </div>
+            <div class="c-file-res">
+                <img src="" alt="" name="thumb">
+            </div>
+        </div> -->
+
+        <!--—————————————————————————————————————————————————
+            用户信息输入区域
+        ——————————————————————————————————————————————————-->
+        <div class="layui-form-item">
+            <label class="layui-form-label" for="nickname">用户昵称</label>
+            <div class="layui-input-block">
+                <input type="text" name="nickname" id="nickname" 
+                       class="layui-input" 
+                       lay-verify="required" 
+                       placeholder="12个以内汉字">
+            </div>
+        </div>
+
+        <!--—————————————————————————————————————————————————
+            密码输入区域
+        ——————————————————————————————————————————————————-->
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-text-red" for="password">*用户密码</label>
+            <div class="layui-input-block">
+                <input type="password" name="password" id="password" 
+                       class="layui-input layui-text-red" 
+                       lay-verify="required"
+                       placeholder="密码为6-12位数字字母组合">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-text-red" for="repassword">*验证密码</label>
+            <div class="layui-input-block">
+                <input type="password" name="repassword" id="repassword" 
+                       class="layui-input layui-text-red" 
+                       lay-verify="required"  
+                       placeholder="请再次输入密码">
+            </div>
+        </div>
+
+        <!--—————————————————————————————————————————————————
+            表单提交区域
+        ——————————————————————————————————————————————————-->
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" 
+                        lay-submit="" 
+                        lay-filter="c-verify">立即提交</button>
+            </div>
+        </div>
+    </form>
+</div>
+{/block}
+ 
+{block name="css"}
+{css href="__ADMIN__/cropperjs/cropper.min.css"}
+{/block}
+
+{block name="javascript"}
+{js href="__ADMIN__/cropperjs/cropper.min.js"} 
+{include file="public/uploadimg"}
+{/block}

@@ -1,0 +1,101 @@
+{extend name="base" /}
+{block name="title"}用户数据 - {$user.uname}{/block}
+{block name="main"}
+<div class="layui-body">
+    {include file="public/menu" /}
+
+    <div class="c-flex-content has-nav">
+        <!-- 左侧导航 -->
+        <div class="c-nav">
+            <ul>
+                {volist name="navItems" id="nav"}
+                <li>
+                    <a href="{$nav.url}" class="{if $nav.active}cur{/if}">{$nav.title}</a>
+                </li>
+                {/volist}
+            </ul>
+        </div>
+
+        <!-- 右侧内容区 -->
+        <div class="c-content">
+            <div class="c-content-main">
+                <!-- 数据选项卡 -->
+                <div class="layui-tab layui-tab-brief">
+                    <ul class="layui-tab-title">
+                        <li class="layui-this">该用户登录日志</li>
+                        <li>该用户操作日志</li>                       
+                    </ul>
+                    <div class="layui-tab-content">                       
+                        <!-- 登录日志 -->
+                        <div class="layui-tab-item layui-show">
+                            <div class="layui-card">
+                                <div class="layui-card-header">登录日志（共{$stats.log}条）</div>
+                                <div class="layui-card-body">
+                                    <table class="layui-table">
+                                        <thead>
+                                            <tr>
+                                                <th width="100">ID</th>
+                                                <th>IP地址</th>
+                                                <th width="180">登录时间</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {volist name="data.log" id="item"}
+                                            <tr>
+                                                <td>{$item.id}</td>
+                                                <td>{$item.login_ip}</td>
+                                                <td>{:date('Y-m-d H:i', $item.login_time)}</td>
+                                            </tr>
+                                            {/volist}
+                                        </tbody>
+                                    </table>
+                                    <div class="layui-box layui-laypage">
+                                        {$data.log|raw}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                        
+                        <!-- 操作日志 -->
+                        <div class="layui-tab-item">
+                            <div class="layui-card">
+                                <div class="layui-card-header">操作日志（共{$stats.action}条）</div>
+                                <div class="layui-card-body">
+                                    <table class="layui-table">
+                                        <thead>
+                                            <tr>
+                                                <th width="100">ID</th>
+                                                <th>操作描述</th>
+                                                <th width="180">时间</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {volist name="data.action" id="item"}
+                                            <tr>
+                                                <td>{$item.id}</td>
+                                                <td>{$item.module}</td>
+                                                <td>{:date('Y-m-d H:i', $item.create_time)}</td>
+                                            </tr>
+                                            {/volist}
+                                        </tbody>
+                                    </table>
+                                    <div class="layui-box layui-laypage">
+                                        {$data.action|raw}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.use(['element'], function () {
+        var element = layui.element;
+        // 初始化选项卡
+        element.init();
+    });
+</script>
+{/block}

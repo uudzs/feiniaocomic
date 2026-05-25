@@ -1,0 +1,105 @@
+{extend name="base" /}
+
+{block name="title"}修改用户{/block}
+
+{block name="main"}
+ 
+    <div class="c-form-content">
+        <form class="layui-form" enctype="multipart/form-data" method="post">
+
+            <!--—————————————————————————————————————————————————
+                用户组选择区域
+            ——————————————————————————————————————————————————-->
+            <div class="layui-form-item">
+                <label class="layui-form-label" for="groupid">所属用户组</label>
+                <div class="layui-input-block">
+                    <select name="groupid" lay-verify="required" 
+                            {if ($CurUserInfo.id neq 1)} disabled {/if}>
+                        {volist name="GroupRes" id="vo"}
+                        <option value="{$vo.id}" 
+                                {if ($Admins.groupid eq $vo.id)}selected{/if}> {$vo.title} </option>
+                        {/volist}
+                    </select>
+                </div>
+            </div>
+
+            <!--—————————————————————————————————————————————————
+                账号信息区域
+            ——————————————————————————————————————————————————-->
+            <div class="layui-form-item">
+                <label class="layui-form-label" for="uname">登录账号</label>
+                <div class="layui-input-block">
+                    <input type="text" name="uname" id="uname" 
+                           class="layui-input" 
+                           value="{$Admins.uname}" 
+                           {if $Admins.id eq 1} readonly{/if}
+                           {if ($CurUserInfo.id neq 1)} disabled {/if}>
+                </div>
+            </div>
+
+            <!--—————————————————————————————————————————————————
+                头像上传区域
+            ——————————————————————————————————————————————————-->
+            <!-- <div class="c-image-file layui-form-item">
+                <label class="layui-form-label" for="thumb">用户头像</label>
+                <a class="file-btn layui-btn" name="thumb">
+                    <i class="layui-icon">&#xe67c;</i>上传图片
+                </a>
+                <div class="layui-input-block">
+                    <input type="text" name="thumb" id="thumb" 
+                           class="layui-input" 
+                           value="{$Admins.thumb}">
+                </div>
+                <div class="c-file-res {if ($Admins.thumb)} mt15 {/if}">
+                    <img src="{$Admins.thumb}" alt="用户头像预览" name="thumb">
+                </div>
+            </div> -->
+
+            <!--—————————————————————————————————————————————————
+                基本信息编辑区域
+            ——————————————————————————————————————————————————-->
+            <div class="layui-form-item">
+                <label class="layui-form-label" for="nickname">用户昵称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="nickname" id="nickname" 
+                           class="layui-input" 
+                           value="{$Admins.nickname}" 
+                           placeholder="12个以内汉字">
+                </div>
+            </div>
+
+            <!--—————————————————————————————————————————————————
+                密码修改区域
+            ——————————————————————————————————————————————————-->
+            <div class="layui-form-item">
+                <label class="layui-form-label" for="newpassword">修改密码</label>
+                <div class="layui-input-block">
+                    <input type="password" name="newpassword" id="newpassword" 
+                           class="layui-input" 
+                           placeholder="6-12位数字字母组合">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label" for="newrepassword">确认密码</label>
+                <div class="layui-input-block">
+                    <input type="password" name="newrepassword" id="newrepassword" 
+                           class="layui-input" 
+                           placeholder="请再次输入新密码">
+                </div>
+            </div>
+
+            <!--—————————————————————————————————————————————————
+                表单操作区域
+            ——————————————————————————————————————————————————-->
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" 
+                            lay-submit="" 
+                            lay-filter="c-verify">保存修改</button>
+                </div>
+            </div>
+        </form>
+    </div>
+ 
+{/block}

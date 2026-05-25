@@ -1,0 +1,562 @@
+{extend name="base" /}
+{block name="title"}升级管理{/block}
+{block name="css"}
+<style>
+/* 升级管理统计卡片 */
+.upgrade-stat-card {
+    display: flex;
+    align-items: center;
+    padding: 20px 24px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+    border-left: 4px solid #1e9fff;
+}
+
+.upgrade-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.upgrade-stat-card .stat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 16px;
+    font-size: 24px;
+}
+
+.upgrade-stat-card .stat-icon .layui-icon {
+    font-size: 28px;
+}
+
+.version-card {
+    border-left-color: #1e9fff;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+}
+.version-card .stat-icon {
+    background: rgba(30, 159, 255, 0.15);
+    color: #1e9fff;
+}
+
+.logs-card {
+    border-left-color: #52c41a;
+    background: linear-gradient(135deg, #f6ffed 0%, #d9f7be 100%);
+}
+.logs-card .stat-icon {
+    background: rgba(82, 196, 26, 0.15);
+    color: #52c41a;
+}
+
+.latest-card {
+    border-left-color: #faad14;
+    background: linear-gradient(135deg, #fffbe6 0%, #ffe58f 100%);
+}
+.latest-card .stat-icon {
+    background: rgba(250, 173, 20, 0.15);
+    color: #faad14;
+}
+.latest-card.up-to-date {
+    border-left-color: #52c41a;
+    background: linear-gradient(135deg, #f6ffed 0%, #d9f7be 100%);
+}
+.latest-card.up-to-date .stat-icon {
+    background: rgba(82, 196, 26, 0.15);
+    color: #52c41a;
+}
+
+.upgrade-stat-card .stat-content {
+    flex: 1;
+}
+
+.upgrade-stat-card .stat-label {
+    margin: 0 0 4px 0;
+    font-size: 13px;
+    color: #666;
+    line-height: 1.4;
+}
+
+.upgrade-stat-card .stat-value {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+    color: #333;
+    line-height: 1.3;
+}
+
+.upgrade-stat-card .stat-unit {
+    font-size: 14px;
+    font-weight: normal;
+    color: #999;
+}
+
+/* 绿色提示框 */
+.layui-alert-green {
+    color: #52c41a;
+}
+.layui-alert-green i {
+    margin-right: 8px;
+}
+
+/* 灰色文字 */
+.layui-text-gray {
+    color: #999;
+    font-size: 12px;
+}
+
+/* 版本表格美化 */
+.layui-version-table {
+    margin-top: 10px;
+}
+.layui-version-table td.version-intro {
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.layui-version-table .layui-btn {
+    padding: 0 12px;
+}
+</style>
+{/block}
+
+{block name="main"}
+<div class="layui-body">
+	{include file="public/menu" /}
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                <span class="layui-breadcrumb">
+                    <a><cite>升级管理</cite></a>
+                </span>
+            </div>
+            <div class="layui-card-body">
+                <!-- 系统信息 -->
+                <div class="layui-row layui-col-space20">
+                    <!-- 当前版本 -->
+                    <div class="layui-col-md4">
+                        <div class="upgrade-stat-card version-card">
+                            <div class="stat-icon">
+                                <i class="layui-icon layui-icon-release"></i>
+                            </div>
+                            <div class="stat-content">
+                                <p class="stat-label">当前版本</p>
+                                <p class="stat-value">{$systemVersion}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 升级记录 -->
+                    <div class="layui-col-md4">
+                        <div class="upgrade-stat-card logs-card">
+                            <div class="stat-icon">
+                                <i class="layui-icon layui-icon-survey"></i>
+                            </div>
+                            <div class="stat-content">
+                                <p class="stat-label">升级记录</p>
+                                <p class="stat-value">{$logs.total|default=0} <span class="stat-unit">条</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 最新版本 -->
+                    <div class="layui-col-md4">
+                        <div class="upgrade-stat-card latest-card" id="latest-version-box">
+                            <div class="stat-icon">
+                                <i class="layui-icon layui-icon-water"></i>
+                            </div>
+                            <div class="stat-content">
+                                <p class="stat-label">最新版本</p>
+                                <p class="stat-value" id="latest-version-value">检测中...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <!-- Tab切换 -->
+                <div class="layui-tab layui-mt20" lay-filter="upgrade-tab">
+                    <ul class="layui-tab-title">
+                        <li class="layui-this" lay-id="system">系统升级</li>
+                        <li lay-id="module">模块升级</li>
+                        <li lay-id="template">模板升级</li>
+                        <li lay-id="logs">升级记录</li>
+                    </ul>
+                    <div class="layui-tab-content">
+                        <!-- 系统升级 -->
+                        <div class="layui-tab-item layui-show" id="tab-system">
+                            <div class="layui-row">
+                                <div class="layui-col-md12">
+                                    <blockquote class="layui-elem-quote layui-quote-nm">
+                                        <p><strong>升级说明：</strong></p>
+                                        <ul>
+                                            <li>请确保服务器有足够的磁盘空间和稳定的网络连接</li>
+                                            <li>如果有多个版本更新，系统会按顺序依次升级</li>
+                                            <li>升级过程中请勿关闭页面或进行其他操作</li>
+                                        </ul>
+                                    </blockquote>
+                                    <div class="layui-form-item layui-mt20">
+                                        <button type="button" class="layui-btn" id="btn-system-check">
+                                            <i class="layui-icon layui-icon-refresh"></i> 检查系统更新
+                                        </button>
+                                    </div>
+                                    <div id="system-update-result" class="layui-mt10"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 模块升级 -->
+                        <div class="layui-tab-item" id="tab-module">
+                            <table class="layui-hide" id="module-table" lay-filter="module-table"></table>
+                        </div>
+
+                        <!-- 模板升级 -->
+                        <div class="layui-tab-item" id="tab-template">
+                            <table class="layui-hide" id="template-table" lay-filter="template-table"></table>
+                        </div>
+
+                        <!-- 升级记录 -->
+                        <div class="layui-tab-item" id="tab-logs">
+                            <table class="layui-hide" id="log-table" lay-filter="log-table"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{/block}
+
+{block name="javascript"}
+<script>
+layui.use(['element', 'table', 'form', 'layer'], function(){
+    var $ = layui.$;
+    var element = layui.element;
+    var table = layui.table;
+    var form = layui.form;
+    var layer = layui.layer;
+
+    // 渲染版本列表
+    function renderVersionList(versions, currentVersion, latestVersion){
+        var html = '';
+        if(versions && versions.length > 0){
+            html = '<div class="layui-alert layui-alert-success">';
+            html += '<i class="layui-icon layui-icon-ok-circle"></i> ';
+            html += '检测到新版本！当前版本：' + currentVersion + '，最新版本：' + latestVersion;
+            html += '</div>';
+            html += '<div class="layui-mt15"><strong>可用版本列表：</strong></div>';
+            html += '<table class="layui-table layui-mt10 layui-version-table">';
+            html += '<colgroup><col width="100"><col width="150"><col><col width="180"></colgroup>';
+            html += '<thead><tr><th>版本号</th><th>发布时间</th><th>更新说明</th><th>操作</th></tr></thead>';
+            html += '<tbody>';
+
+            versions.forEach(function(v){
+                html += '<tr>';
+                html += '<td><span class="layui-badge layui-bg-blue">' + v.version + '</span></td>';
+                html += '<td>' + (v.create_time || '-') + '</td>';
+                html += '<td class="version-intro">' + (v.intro || '-') + '</td>';
+                html += '<td><button class="layui-btn layui-btn-sm layui-btn-normal btn-upgrade-single" data-version="' + v.version + '"><i class="layui-icon layui-icon-refresh"></i> 升级</button></td>';
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            html += '<div class="layui-mt10 layui-text-gray">提示：点击"升级"按钮可升级到对应版本，请按顺序依次升级</div>';
+        }
+        $('#system-update-result').html(html);
+
+        // 绑定升级按钮事件
+        $('.btn-upgrade-single').on('click', function(){
+            var version = $(this).data('version');
+            doUpgrade('system', 'system', version);
+        });
+    }
+
+    // 自动检测最新版本
+    (function checkLatestVersion(){
+        $.get('{:url("manage/upgrade/system")}', function(res){
+            var $box = $('#latest-version-box');
+            var $value = $('#latest-version-value');
+            if(res.code === 200 && res.data){
+                var latestVersion = res.data.latest_version || '-';
+                var currentVersion = res.data.current_version || '-';
+                var hasUpdate = res.data.has_update;
+                var versions = res.data.versions || [];
+
+                $value.text(latestVersion);
+
+                if(!hasUpdate && latestVersion === currentVersion){
+                    // 已是最新版本
+                    $box.removeClass('latest-card').addClass('up-to-date');
+                    $box.find('.stat-icon .layui-icon').removeClass('layui-icon-water').addClass('layui-icon-ok-circle');
+                    $('#system-update-result').html('<div class="layui-alert layui-alert-green"><i class="layui-icon layui-icon-ok-circle"></i> 当前已是最新版本 (' + latestVersion + ')，无需升级</div>');
+                } else if(hasUpdate && versions.length > 0){
+                    // 有可用更新，直接渲染版本列表
+                    renderVersionList(versions, currentVersion, latestVersion);
+                }
+            } else {
+                $value.text('检测失败');
+            }
+        }).fail(function(){
+            $('#latest-version-value').text('-');
+        });
+    })();
+
+    // 检查更新（刷新）
+    $('#btn-system-check').on('click', function(){
+        var btn = $(this);
+        btn.addClass('layui-btn-disabled').prop('disabled', true);
+        btn.find('i').addClass('layui-anim-loop');
+
+        $.get('{:url("manage/upgrade/system")}', function(res){
+            btn.removeClass('layui-btn-disabled').prop('disabled', false);
+            btn.find('i').removeClass('layui-anim-loop');
+
+            // 更新统计卡片
+            if(res.code === 200 && res.data){
+                var latestVersion = res.data.latest_version || '-';
+                var currentVersion = res.data.current_version || '-';
+                var hasUpdate = res.data.has_update;
+                var versions = res.data.versions || [];
+
+                $('#latest-version-value').text(latestVersion);
+                var $box = $('#latest-version-box');
+
+                if(!hasUpdate && latestVersion === currentVersion){
+                    $box.removeClass('latest-card').addClass('up-to-date');
+                    $box.find('.stat-icon .layui-icon').removeClass('layui-icon-water').addClass('layui-icon-ok-circle');
+                    $('#system-update-result').html('<div class="layui-alert layui-alert-green"><i class="layui-icon layui-icon-ok-circle"></i> 当前已是最新版本 (' + latestVersion + ')，无需升级</div>');
+                } else {
+                    $box.removeClass('up-to-date').addClass('latest-card');
+                    $box.find('.stat-icon .layui-icon').removeClass('layui-icon-ok-circle').addClass('layui-icon-water');
+                    renderVersionList(versions, currentVersion, latestVersion);
+                }
+            }
+        }).fail(function(){
+            btn.removeClass('layui-btn-disabled').prop('disabled', false);
+            btn.find('i').removeClass('layui-anim-loop');
+            layer.msg('检查更新失败，请稍后重试', {icon: 2});
+        });
+    });
+
+    // 执行升级
+    function doUpgrade(type, name, version){
+        layer.confirm('确定要升级到 v' + version + ' 吗？<br>升级前请确保已备份重要数据！', {
+            icon: 3,
+            title: '确认升级'
+        }, function(index){
+            layer.close(index);
+            var loading = layer.msg('正在升级，请稍候...', {icon: 16, shade: 0.3, time: 0});
+
+            var url = type === 'system'
+                ? '{:url("manage/upgrade/systemUpgrade")}'
+                : type === 'module'
+                    ? '{:url("manage/upgrade/moduleUpgrade")}'
+                    : '{:url("manage/upgrade/templateUpgrade")}';
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: {name: name, version: version},
+                timeout: 0,
+                success: function(res){
+                    layer.close(loading);
+
+                    if(res.code === 200){
+                        layer.alert('<strong style="font-size:16px;">升级成功！</strong><br><br>' +
+                            '版本：' + res.from_version + ' → ' + res.to_version,
+                            {icon: 1, title: '升级完成'}, function(){
+                                location.reload();
+                            });
+                    } else {
+                        layer.msg('升级失败：' + res.msg, {icon: 2, time: 3000});
+                    }
+                },
+                error: function(){
+                    layer.close(loading);
+                    layer.msg('升级请求失败', {icon: 2});
+                }
+            });
+        });
+    }
+
+    // 模块列表
+    table.render({
+        elem: '#module-table'
+        ,url: '{:url("manage/module/getModuleData")}'
+        ,cols: [[
+            {field: 'name', title: '标识', width: 120}
+            ,{field: 'title', title: '名称', width: 150}
+            ,{field: 'version', title: '当前版本', width: 120}
+            ,{field: 'description', title: '描述'}
+            ,{title: '操作', width: 200, align: 'center', toolbar: '#module-bar'}
+        ]]
+    });
+
+    // 模块行工具栏
+    table.on('tool(module-table)', function(obj){
+        var data = obj.data;
+        if(obj.event === 'check'){
+            var btn = $(this);
+            btn.addClass('layui-btn-disabled').prop('disabled', true);
+
+            $.get('{:url("manage/upgrade/checkModuleUpdate")}', {name: data.name}, function(res){
+                btn.removeClass('layui-btn-disabled').prop('disabled', false);
+
+                if(res.data && res.data.has_update){
+                    var versions = res.data.versions || [];
+                    if(versions.length > 0){
+                        var latestVersion = versions[versions.length - 1].version;
+                        layer.confirm('检测到 [' + data.title + '] 有新版本！<br>最新版本：' + latestVersion + '<br>是否升级？', {
+                            icon: 1,
+                            title: '模块更新'
+                        }, function(idx){
+                            layer.close(idx);
+                            doUpgrade('module', data.name, latestVersion);
+                        });
+                    }
+                } else {
+                    layer.msg('[' + data.title + '] 已是最新版本', {icon: 6});
+                }
+            });
+        }
+    });
+
+    // 模板列表
+    table.render({
+        elem: '#template-table'
+        ,url: '{:url("manage/upgrade/template")}'
+        ,cols: [[
+            {field: 'name', title: '标识', width: 120}
+            ,{field: 'title', title: '名称', width: 150}
+            ,{field: 'version', title: '当前版本', width: 120}
+            ,{field: 'author', title: '作者'}
+            ,{title: '操作', width: 200, align: 'center', toolbar: '#template-bar'}
+        ]]
+    });
+
+    // 模板行工具栏
+    table.on('tool(template-table)', function(obj){
+        var data = obj.data;
+        if(obj.event === 'check'){
+            var btn = $(this);
+            btn.addClass('layui-btn-disabled').prop('disabled', true);
+
+            $.get('{:url("manage/upgrade/checkTemplateUpdate")}', {name: data.name}, function(res){
+                btn.removeClass('layui-btn-disabled').prop('disabled', false);
+
+                if(res.data && res.data.has_update){
+                    var versions = res.data.versions || [];
+                    if(versions.length > 0){
+                        var latestVersion = versions[versions.length - 1].version;
+                        layer.confirm('检测到 [' + data.title + '] 有新版本！<br>最新版本：' + latestVersion + '<br>是否升级？', {
+                            icon: 1,
+                            title: '模板更新'
+                        }, function(idx){
+                            layer.close(idx);
+                            doUpgrade('template', data.name, latestVersion);
+                        });
+                    }
+                } else {
+                    layer.msg('[' + data.title + '] 已是最新版本', {icon: 6});
+                }
+            });
+        }
+    });
+
+    // 升级记录列表
+    table.render({
+        elem: '#log-table'
+        ,url: '{:url("manage/upgrade/logs")}'
+        ,cols: [[
+            {field: 'id', title: 'ID', width: 60}
+            ,{field: 'type', title: '类型', width: 80, templet: function(d){
+                var map = {system: '系统', module: '模块', template: '模板'};
+                return map[d.type] || d.type;
+            }}
+            ,{field: 'name', title: '名称'}
+            ,{field: 'from_version', title: '原版本', width: 100}
+            ,{field: 'to_version', title: '新版本', width: 100}
+            ,{field: 'status', title: '状态', width: 100, templet: function(d){
+                var map = {
+                    0: '<span class="layui-badge layui-bg-gray">待处理</span>',
+                    1: '<span class="layui-badge layui-bg-blue">下载中</span>',
+                    2: '<span class="layui-badge layui-bg-black">解压中</span>',
+                    3: '<span class="layui-badge layui-bg-black">备份中</span>',
+                    4: '<span class="layui-badge layui-bg-blue">权限检查</span>',
+                    5: '<span class="layui-badge layui-bg-orange">升级中</span>',
+                    6: '<span class="layui-badge layui-bg-green">已完成</span>',
+                    7: '<span class="layui-badge">失败</span>',
+                    8: '<span class="layui-badge layui-bg-blue">回滚中</span>'
+                };
+                return map[d.status] || '<span class="layui-badge layui-bg-gray">未知</span>';
+            }}
+            ,{field: 'created_at', title: '时间', width: 160, templet: function(d){
+                return d.created_at ? layui.util.toDateString(d.created_at * 1000) : '-';
+            }}
+            ,{title: '操作', width: 150, align: 'center', toolbar: '#log-bar'}
+        ]]
+    });
+
+    // 升级记录行工具栏
+    table.on('tool(log-table)', function(obj){
+        var data = obj.data;
+        if(obj.event === 'detail'){
+            $.get('{:url("manage/upgrade/logDetail")}', {id: data.id}, function(res){
+                if(res.data){
+                    var logs = res.data.execute_log || [];
+                    var html = '<div style="padding:10px;">';
+                    html += '<p><strong>类型：</strong>' + res.data.type + '</p>';
+                    html += '<p><strong>名称：</strong>' + res.data.name + '</p>';
+                    html += '<p><strong>版本：</strong>' + res.data.from_version + ' → ' + res.data.to_version + '</p>';
+                    html += '<p><strong>状态：</strong>' + res.data.status_text + '</p>';
+
+                    if(res.data.error_msg){
+                        html += '<p><strong style="color:#ff5722;">错误信息：</strong></p>';
+                        html += '<pre style="background:#f5f5f5;padding:10px;overflow:auto;max-height:200px;">' + res.data.error_msg + '</pre>';
+                    }
+
+                    if(logs.length > 0){
+                        html += '<p><strong>执行日志：</strong></p>';
+                        html += '<pre style="background:#f5f5f5;padding:10px;overflow:auto;max-height:200px;">';
+                        logs.forEach(function(log){
+                            html += '[' + log.time + '] ' + log.message + '\n';
+                        });
+                        html += '</pre>';
+                    }
+
+                    html += '</div>';
+
+                    layer.open({
+                        type: 1,
+                        title: '升级详情',
+                        area: ['600px', '400px'],
+                        content: html
+                    });
+                }
+            });
+        }
+    });
+});
+</script>
+
+<!-- 模块操作列模板 -->
+<script type="text/html" id="module-bar">
+    <a class="layui-btn layui-btn-xs" lay-event="check">
+        <i class="layui-icon layui-icon-refresh"></i> 检查更新
+    </a>
+</script>
+
+<!-- 模板操作列模板 -->
+<script type="text/html" id="template-bar">
+    <a class="layui-btn layui-btn-xs" lay-event="check">
+        <i class="layui-icon layui-icon-refresh"></i> 检查更新
+    </a>
+</script>
+
+<!-- 升级记录操作列模板 -->
+<script type="text/html" id="log-bar">
+    <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="detail">
+        <i class="layui-icon layui-icon-about"></i> 详情
+    </a>
+</script>
+{/block}

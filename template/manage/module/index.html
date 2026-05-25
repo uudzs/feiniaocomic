@@ -1,0 +1,240 @@
+{extend name="base" /}
+{block name="title"}模块管理{/block}
+{block name="main"}
+{include file="public/menu" /}
+    <div class="layui-body">
+        <div class="c-flex-content">
+            <div class="c-content">
+                <div class="c-content-main">
+                    <table id="moduleTable" lay-filter="moduleTable"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/html" id="toolbar">
+        <div class="layui-btn-container">
+            <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="moduleMarket">
+                <i class="layui-icon layui-icon-app"></i> 模块市场
+            </button>
+            {if $isLogin}
+                <button class="layui-btn layui-bg-red layui-btn-sm" lay-event="showLoginDialog">
+                    <i class="layui-icon layui-icon-logout"></i> 退出联盟
+                </button>                
+            {else/}
+                <button class="layui-btn layui-btn-sm" lay-event="showLoginDialog">
+                    <i class="layui-icon layui-icon-username"></i> 登录联盟
+                </button>
+            {/if}
+            <button class="layui-btn layui-btn-sm layui-btn-warm" lay-event="showUpdateDialog">
+                <i class="layui-icon layui-icon-upload-drag"></i> 更新模块
+            </button>
+        </div>
+    </script>
+
+    <script type="text/html" id="statusTpl">
+        {{#  if(d.status === 'enabled'){ }}
+        <span class="layui-badge layui-bg-green">已启用</span>
+        {{#  } else if(d.status === 'disabled'){ }}
+        <span class="layui-badge layui-bg-orange">已禁用</span>
+        {{#  } else if(d.status === 'installed'){ }}
+        <span class="layui-badge layui-bg-blue">已安装</span>
+        {{#  } else { }}
+        <span class="layui-badge layui-bg-gray">未安装</span>
+        {{#  } }}
+    </script>
+
+    <script type="text/html" id="operationTpl">
+        {{#  if(d.status === 'enabled'){ }}
+        <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="disable">禁用</a>
+        <a class="layui-btn layui-btn-xs" lay-event="setting">设置</a>
+        <a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="detail">详情</a>
+        {{#  } else if(d.status === 'disabled'){ }}
+        <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="enable">启用</a>
+        <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="uninstall">卸载</a>
+        <a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="detail">详情</a>
+        {{#  } else if(d.status === 'installed'){ }}
+        <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="enable">启用</a>
+        <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="uninstall">卸载</a>
+        <a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="detail">详情</a>
+        {{#  } else { }}
+        <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="install">安装</a>
+        <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete">删除</a>
+        <a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="detail">详情</a>
+        {{#  } }}
+    </script>
+{/block}
+
+{block name="javascript"}
+    <script>
+    layui.use(['table', 'layer', 'form'], function(){
+        var table = layui.table;
+        var layer = layui.layer;
+        var form = layui.form;
+        const $ = layui.$;
+        table.render({
+            elem: '#moduleTable',
+            url: '{:url("module/getModuleData")}',
+            toolbar: '#toolbar',
+            defaultToolbar: ['filter', 'exports', 'print'],
+            cols: [[
+                {type: 'checkbox', fixed: 'left'},
+                {field: 'id', title: 'ID', width: 80, sort: true},
+                {field: 'name', title: '模块名称', width: 100},
+                {field: 'title', title: '模块标题'},
+                {field: 'description', title: '描述'},
+                {field: 'version', title: '版本', width: 60},
+                {field: 'author', title: '作者', width: 100},
+                {field: 'status', title: '状态', width: 80, templet: '#statusTpl'},
+                {field: 'create_time', title: '安装时间', width: 180},
+                {title: '操作', toolbar: '#operationTpl', width: 200, fixed: 'right'}
+            ]],
+            page: true,
+            limit: 10,
+            limits: [10, 20, 50, 100]
+        });
+
+        table.on('toolbar(moduleTable)', function(obj){
+            if(obj.event === 'moduleMarket'){
+                moduleMarket();
+            }
+            if(obj.event === 'showLoginDialog'){
+                showLoginDialog();
+            }
+            if(obj.event === 'showUpdateDialog'){
+                showUpdateDialog();
+            }
+        });
+
+        table.on('tool(moduleTable)', function(obj){
+            var data = obj.data;
+            
+            if(obj.event === 'enable'){
+                enableModule(data.id);
+            } else if(obj.event === 'disable'){
+                disableModule(data.id);
+            } else if(obj.event === 'install'){
+                installModule(data.id);
+            } else if(obj.event === 'uninstall'){
+                uninstallModule(data.id);
+            } else if(obj.event === 'delete'){
+                deleteModule(data.id);
+            } else if(obj.event === 'setting'){
+                showSettingDialog(data.id);
+            } else if(obj.event === 'detail'){
+                showDetailDialog(data.id);
+            }
+        });
+
+        function enableModule(id){
+            layer.confirm('确定要启用该模块吗？', function(index){
+                $.post('{:url("module/enable")}', {id: id}, function(res){
+                    if(res.code === 200){
+                        layer.msg(res.msg, {icon: 1});
+                        table.reload('moduleTable');
+                    } else {
+                        layer.msg(res.msg, {icon: 2});
+                    }
+                });
+                layer.close(index);
+            });
+        }
+
+        function disableModule(id){
+            layer.confirm('确定要禁用该模块吗？', function(index){
+                $.post('{:url("module/disable")}', {id: id}, function(res){
+                    if(res.code === 200){
+                        layer.msg(res.msg, {icon: 1});
+                        table.reload('moduleTable');
+                    } else {
+                        layer.msg(res.msg, {icon: 2});
+                    }
+                });
+                layer.close(index);
+            });
+        }
+
+        function installModule(id){
+            layer.confirm('确定要安装该模块吗？', function(index){
+                $.post('{:url("module/install")}', {id: id}, function(res){
+                    if(res.code === 200){
+                        layer.msg(res.msg, {icon: 1});
+                        parent.location.reload();
+                    } else {
+                        layer.msg(res.msg, {icon: 2});
+                    }
+                });
+                layer.close(index);
+            });
+        }
+
+        function uninstallModule(id){
+            layer.confirm('确定要卸载该模块吗？卸载将清除模块数据！', function(index){
+                $.post('{:url("module/uninstall")}', {id: id}, function(res){
+                    if(res.code === 200){
+                        layer.msg(res.msg, {icon: 1});
+                        table.reload('moduleTable');
+                    } else {
+                        layer.msg(res.msg, {icon: 2});
+                    }
+                });
+                layer.close(index);
+            });
+        }
+
+        function deleteModule(id){
+            layer.confirm('确定要删除该模块吗？删除将无法恢复！', function(index){
+                $.post('{:url("module/delete")}', {id: id}, function(res){
+                    if(res.code === 200){
+                        layer.msg(res.msg, {icon: 1});
+                        table.reload('moduleTable');
+                    } else {
+                        layer.msg(res.msg, {icon: 2});
+                    }
+                });
+                layer.close(index);
+            });
+        }
+
+        function showSettingDialog(id){
+            layer.open({
+                type: 2,
+                title: '模块设置',
+                area: ['800px', '600px'],
+                content: '{:url("module/setting")}?id=' + id
+            });
+        }
+
+        function showDetailDialog(id){
+            layer.open({
+                type: 2,
+                title: '模块详情',
+                area: ['800px', '600px'],
+                content: '{:url("module/detail")}?id=' + id
+            });
+        }
+
+        window.moduleMarket = function(){
+            layui.layer.open({
+                type: 2,
+                title: '模块市场',
+                area: ['80%', '80%'],
+                content: '{:url("module/market")}'
+            });
+        }
+
+        window.showLoginDialog = function(){
+            layui.layer.open({
+                type: 2,
+                title: '登录联盟',
+                area: ['500px', '500px'],
+                content: '{:url("upgrade/login")}'
+            });
+        }
+
+        window.showUpdateDialog = function(){
+            window.location.href = '{:url("upgrade/index")}';
+        }
+    });    
+    </script>
+{/block}

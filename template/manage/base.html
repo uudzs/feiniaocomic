@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{block name="title"}{/block}-后台管理</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <!-- 引入css文件 -->
+    {css href="/static/js/layui/css/layui.css"}
+    {css href="/static/admin/css/admin.css"}
+    {block name="css"}{/block}
+    {block name="editor"}{/block}
+
+</head>
+
+<body>
+    <div class="layui-layout layui-layout-admin">
+        {block name="main"}{/block}
+        <div class="layui-hide" id="uploadUrl" uploadFileUrl="{:url('upload/uploadFile')}" uploadUrl="{:url('upload/uploadImg')}" ></div>
+    </div>
+    <!-- 引入js 文件-->
+    {js href="/static/js/layui/layui.js"}
+    {js href="/static/admin/js/admin.js"} 
+    {block name="javascript"}{/block}
+</body>
+</html>

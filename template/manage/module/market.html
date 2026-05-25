@@ -1,0 +1,411 @@
+{extend name="base" /}
+{block name="title"}模块市场{/block}
+
+{block name="css"}
+<style>
+.layui-layout-admin .layui-body {
+    left: 0;
+    top: 0;
+}
+.module-market-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 10px 0;
+}
+.module-card {
+    width: 280px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    overflow: hidden;
+    transition: all 0.3s;
+    border: 1px solid #eee;
+}
+.module-card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    transform: translateY(-2px);
+}
+.module-card-installed {
+    border-color: #5fb878;
+}
+.module-card-update {
+    border-color: #1976bd;
+}
+.module-cover {
+    width: 100%;
+    height: 160px;
+    background: linear-gradient(135deg, #66bcea 0%, #2a6ba1 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+.module-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.module-cover-default {
+    font-size: 48px;
+    color: #fff;
+    opacity: 0.8;
+}
+.module-info {
+    padding: 15px;
+}
+.module-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.module-title {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 8px;
+}
+.module-meta {
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 10px;
+}
+.module-meta span {
+    margin-right: 15px;
+}
+.module-desc {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.6;
+    height: 60px;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+.module-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 10px;
+    border-top: 1px solid #f0f0f0;
+}
+.module-version {
+    font-size: 12px;
+    color: #999;
+}
+.module-status {
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 3px;
+}
+.module-status-installed {
+    background: #e8f8f0;
+    color: #5fb878;
+}
+.module-status-update {
+    background: #e6f3ff;
+    color: #0185a5;
+}
+.module-status-new {
+    background: #e8f0ff;
+    color: #1976bd;
+}
+.module-actions {
+    padding: 0 15px 15px;
+}
+.module-btn {
+    width: 100%;
+    height: 36px;
+    line-height: 36px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+}
+.module-btn-install {
+    background: #009688;
+    color: #fff;
+}
+.module-btn-install:hover {
+    background: #00897b;
+}
+.module-btn-update {
+    background: #1976bd;
+    color: #fff;
+}
+.module-btn-update:hover {
+    background: #0185a5;
+}
+.module-btn-installed {
+    background: #e0e0e0;
+    color: #999;
+    cursor: default;
+}
+.module-btn-detail {
+    background: #f0f0f0;
+    color: #666;
+    margin-top: 8px;
+}
+.module-btn-detail:hover {
+    background: #e0e0e0;
+}
+.loading-tip {
+    width: 100%;
+    text-align: center;
+    padding: 60px 0;
+    color: #999;
+    font-size: 14px;
+}
+.loading-tip i {
+    font-size: 24px;
+    margin-right: 10px;
+}
+.empty-tip {
+    width: 100%;
+    text-align: center;
+    padding: 60px 0;
+    color: #999;
+    font-size: 14px;
+}
+.market-stats {
+    padding: 10px 0 15px;
+    color: #666;
+    font-size: 14px;
+}
+.market-stats strong {
+    color: #009688;
+}
+.c-content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: #fff;
+    border-bottom: 1px solid #f0f0f0;
+}
+.c-content-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #333;
+}
+.header-tools {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+</style>
+{/block}
+
+{block name="main"}
+<div class="layui-body">
+    <div class="c-flex-content">
+        <div class="c-content">
+            <div class="c-content-header">
+                <h3>模块市场</h3>
+                <div class="header-tools">
+                    <div class="layui-form layui-form-pane" style="display: inline-block;">
+                        <div class="layui-form-item" style="margin-bottom: 0;">
+                            <div class="layui-input-inline" style="width: 200px;">
+                                <input type="text" id="searchKeyword" name="keyword" placeholder="搜索模块名称/标识" 
+                                       autocomplete="off" class="layui-input" value="">
+                            </div>
+                        </div>
+                    </div>
+                    <button class="layui-btn layui-btn-sm" id="btnSearch">
+                        <i class="layui-icon layui-icon-search"></i> 搜索
+                    </button>
+                </div>
+            </div>
+            
+            <div class="c-content-main">
+                <div class="market-stats">
+                    <span class="stats-item">共 <strong>{$moduleCount}</strong> 个模块</span>
+                </div>
+                
+                <div id="moduleList" class="module-market-list">
+                    <!-- 模块卡片将通过JS渲染 -->
+                    <div class="loading-tip"><i class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop"></i> 正在加载...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+
+{block name="javascript"}
+<script>
+var moduleData = {$modules|raw};
+var isSearchMode = false;
+layui.use(['form', 'upload', 'layer'], function(){
+    var form = layui.form;
+    var upload = layui.upload;
+    var layer = layui.layer;
+    const $ = layui.$;
+  
+    renderModules(moduleData);
+        
+    // 搜索按钮
+    $('#btnSearch').on('click', function(){
+        searchModules();
+    });
+    
+    // 回车搜索
+    $('#searchKeyword').on('keydown', function(e){
+        if(e.keyCode === 13) {
+            searchModules();
+        }
+    });
+
+    // 渲染模块列表
+    function renderModules(data) {
+        var html = '';
+        
+        if (!data || data.length === 0) {
+            html = '<div class="empty-tip"><i class="layui-icon layui-icon-face-surprised" style="font-size:24px;margin-right:8px;"></i>暂无模块</div>';
+            $('#moduleList').html(html);
+            return;
+        }
+        
+        $.each(data, function(i, item){
+            var cardClass = 'module-card';
+            var statusHtml = '';
+            var btnHtml = '';
+            
+            if (item.is_installed) {
+                cardClass += ' module-card-installed';
+                if (item.has_update) {
+                    cardClass += ' module-card-update';
+                    statusHtml = '<span class="module-status module-status-update">有更新</span>';
+                    btnHtml = '<button class="module-btn module-btn-update" onclick="updateModule(\'' + item.name + '\', \'' + item.version + '\')">更新版本</button>';
+                } else {
+                    statusHtml = '<span class="module-status module-status-installed">已安装</span>';
+                    btnHtml = '<button class="module-btn module-btn-installed">已安装</button>';
+                }
+            } else {
+                statusHtml = '<span class="module-status module-status-new">未安装</span>';
+                btnHtml = '<button class="module-btn module-btn-install" onclick="installModule(\'' + item.name + '\', \'' + item.version + '\')">立即安装</button>';
+            }
+            
+            var coverHtml = item.cover 
+                ? '<img src="' + item.cover + '" alt="' + item.title + '">'
+                : '<div class="module-cover-default"><i class="layui-icon layui-icon-app"></i></div>';
+            
+            html += '<div class="' + cardClass + '">';
+            html += '    <div class="module-cover">' + coverHtml + '</div>';
+            html += '    <div class="module-info">';
+            html += '        <div class="module-name" title="' + item.name + '">' + item.name + '</div>';
+            html += '        <div class="module-title">' + (item.title || item.name) + '</div>';
+            html += '        <div class="module-meta">';
+            html += '            <span><i class="layui-icon layui-icon-user"></i> ' + (item.author || '官方') + '</span>';
+            html += '            <span><i class="layui-icon layui-icon-component"></i> ' + (item.platform || '') + '</span>';
+            html += '        </div>';
+            html += '        <div class="module-desc">' + (item.description || '暂无描述') + '</div>';
+            html += '        <div class="module-footer">';
+            html += '            <span class="module-version">v' + item.version + '</span>';
+            html += '            ' + statusHtml;
+            html += '        </div>';
+            html += '    </div>';
+            html += '    <div class="module-actions">';
+            html += '        ' + btnHtml;
+            html += '    </div>';
+            html += '</div>';
+        });
+        
+        $('#moduleList').html(html);
+        $('.market-stats strong').text(data.length);
+    }
+
+    // 搜索模块
+    window.searchModules = function() {
+        var keyword = $('#searchKeyword').val().trim().toLowerCase();
+        
+        if (!keyword) {
+            renderModules(moduleData);
+            return;
+        }
+        
+        var filtered = [];
+        $.each(moduleData, function(i, item){
+            if (item.name.toLowerCase().indexOf(keyword) !== -1 
+                || (item.title && item.title.toLowerCase().indexOf(keyword) !== -1)
+                || (item.description && item.description.toLowerCase().indexOf(keyword) !== -1)) {
+                filtered.push(item);
+            }
+        });
+        
+        renderModules(filtered);
+    }
+
+    // 安装模块
+    window.installModule = function(name, version) {
+        layer.confirm('确定要安装模块【' + name + '】吗？', function(index){
+            layer.close(index);
+            var loading = layer.msg('正在安装，请稍候...', {icon: 16, shade: 0.3, time: 0});
+            $.ajax({
+                url: '{:url("module/install")}',
+                type: 'POST',
+                data: {name: name, version: version},
+                timeout: 0,
+                success: function(res){
+                    layer.close(loading);
+                    if(res.code === 200){
+                        layer.msg('安装成功', {icon: 1});
+                        setTimeout(function(){
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.location.reload();
+                            parent.layer.close(index);
+                        }, 1000);
+                    } else {
+                        layer.msg(res.msg || res.error || '安装失败', {icon: 2});
+                    }
+                },
+                error: function(){
+                    layer.close(loading);
+                    layer.msg('安装失败', {icon: 2});
+                }
+            });
+        });
+    }
+
+    // 更新版本
+    window.updateModule = function(name, version) {
+        layer.confirm('确定要更新到 v' + version + ' 版本吗？', function(index){
+            layer.close(index);
+            doUpdate(name, version);
+        });
+    }
+
+    // 执行更新
+    window.doUpdate = function(name, version) {
+        var loading = layer.msg('正在升级，请稍候...', {icon: 16, shade: 0.3, time: 0});
+        $.ajax({
+            url: '{:url("module/doUpdate")}',
+            type: 'POST',
+            data: {name: name, version: version},
+            timeout: 0,
+            success: function(res){
+                layer.close(loading);
+                if(res.code === 200){
+                    layer.msg('更新成功', {icon: 1});
+                    setTimeout(function(){
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.location.reload();
+                        parent.layer.close(index);
+                    }, 1000);
+                } else {
+                    layer.msg('升级失败：' + res.msg, {icon: 2, time: 3000});
+                }
+            },
+            error: function(){
+                layer.close(loading);
+                layer.msg('更新失败', {icon: 2});
+            }
+        });
+    }
+
+});
+</script>
+{/block}

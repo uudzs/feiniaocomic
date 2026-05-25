@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html class="h100">
+
+<head>
+    <meta charset="utf-8">
+    <title>跳转提示</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/static/js/layui/css/layui.css" media="all">
+</head>
+
+<body>
+    <!-- js文件引入 -->
+    <script src="/static/js/layui/layui.js"></script>
+    <script>
+        layui.use('layer', function () {
+            var layer = layui.layer;
+            var msg   = "{$jump_msg}";
+            var url   = "{$jump_url}";
+            layer.msg(msg, {
+                icon: 5,
+                time: 2000
+            }, function (index) {
+                layer.close(index);
+                if (url) {
+                    window.location.href = url;
+                }
+            });
+        });
+    </script>
+    <!-- js文件引入 END-->
+
+</body>
+
+</html>

@@ -1,0 +1,255 @@
+{extend name="base" /}
+{block name="title"}登录联盟{/block}
+{block name="css"}
+<style>
+    .layui-layout-admin .layui-body {
+        left: 0;
+        top: 0;
+    }
+    .login-main {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .login-container {
+        display: flex;
+        flex-direction: column;
+        width: 80%;
+        padding: 40px;
+        background: #fff;
+        border-radius: 8px;
+        margin: 0 auto;
+    }
+    .login-title {
+        text-align: center;
+        margin-bottom: 10px;
+        font-size: 20px;
+        color: #333;
+        font-weight: 600;
+    }
+    .login-tip {
+        text-align: center;
+        color: #666;
+        margin-bottom: 20px;
+        font-size: 14px;
+    }
+    .login-tip a {
+        color: #1890ff;
+        text-decoration: none;
+    }
+    .login-tip a:hover {
+        text-decoration: underline;
+    }
+    .form-item {
+        margin-bottom: 20px;
+    }
+    .form-item label {
+        display: block;
+        margin-bottom: 8px;
+        color: #333;
+        font-size: 14px;
+    }
+    .form-item input {
+        width: 100%;
+        height: 38px;
+        padding: 0 12px;
+        border: 1px solid #d9d9d9;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 14px;
+        transition: border-color 0.3s;
+    }
+    .form-item input:focus {
+        outline: none;
+        border-color: #1890ff;
+        box-shadow: 0 0 0 2px rgba(24,144,255,0.2);
+    }
+    .btn-login {
+        width: 100%;
+        height: 40px;
+        background: #1890ff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        font-size: 15px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    .btn-login:hover {
+        background: #40a9ff;
+    }
+    .btn-login:disabled {
+        background: #d9d9d9;
+        cursor: not-allowed;
+    }
+    .error-msg {
+        color: #ff4d4f;
+        font-size: 13px;
+        margin-top: 10px;
+        text-align: center;
+    }
+    
+    /* 已登录状态 */
+    .logged-container {
+        text-align: center;
+        padding: 20px 0;
+    }
+    .logged-icon {
+        width: 60px;
+        height: 60px;
+        background: #52c41a;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+    }
+    .logged-icon svg {
+        width: 32px;
+        height: 32px;
+        fill: #fff;
+    }
+    .logged-text {
+        color: #52c41a;
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+    .logged-tip {
+        color: #999;
+        font-size: 14px;
+        margin-bottom: 30px;
+    }
+    .btn-logout {
+        width: 100%;
+        height: 40px;
+        background: #fff;
+        color: #ff4d4f;
+        border: 1px solid #ff4d4f;
+        border-radius: 4px;
+        font-size: 15px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    .btn-logout:hover {
+        background: #fff1f0;
+    }
+</style>
+{/block}
+
+{block name="main"}
+<div class="login-main">
+    <div class="login-container">
+        <div class="login-title">官网账号登录</div>
+        {if $isLogin}
+        <!-- 已登录状态 -->
+        <div class="logged-container" id="loggedBox">
+            <div class="logged-icon">
+                <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            </div>
+            <div class="logged-text">已登录官网账号</div>
+            <div class="logged-tip">登录后可购买/下载收费模块和模板</div>
+            <button class="btn-logout" id="btnLogout">退出登录</button>
+        </div>
+        {else/}
+        <!-- 登录表单 -->
+        <div id="loginBox">
+            <div class="login-tip">
+                登录后可购买/下载收费模块和模板，<br>
+                还没有账号？<a href="{$registerUrl}" target="_blank">立即注册</a>
+            </div>
+            <form id="loginForm">
+                <div class="form-item">
+                    <label>账号</label>
+                    <input type="text" name="account" placeholder="请输入账号" autocomplete="off">
+                </div>
+                <div class="form-item">
+                    <label>密码</label>
+                    <input type="password" name="password" placeholder="请输入密码">
+                </div>
+                <div class="error-msg" id="errorMsg" style="display:none;"></div>
+                <button type="submit" class="btn-login" id="btnLogin">登录</button>
+            </form>
+        </div>
+        {/if}
+    </div>
+</div>
+{/block}
+
+{block name="javascript"}
+<script>
+    layui.use(['element', 'table', 'form', 'layer'], function(){
+        var layer = layui.layer;
+        var $ = layui.$;
+        
+        // 登录表单提交
+        $('#loginForm').on('submit', function(e){
+            e.preventDefault();
+            
+            var account = $('input[name="account"]').val().trim();
+            var password = $('input[name="password"]').val();
+            
+            if (!account) {
+                showError('请输入账号');
+                return false;
+            }
+            if (!password) {
+                showError('请输入密码');
+                return false;
+            }
+            
+            var btn = $('#btnLogin');
+            btn.prop('disabled', true).text('登录中...');
+            hideError();
+            
+            $.post('{:url("upgrade/login")}', {
+                account: account,
+                password: password
+            }, function(res){
+                if (res.code == 200) {
+                    layer.msg('登录成功', {icon: 1, time: 800}, function(){
+                        // 关闭当前iframe弹窗并刷新父窗口
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.location.reload();
+                        parent.layer.close(index);
+                    });
+                } else {
+                    showError(res.msg || '登录失败');
+                    btn.prop('disabled', false).text('登录');
+                }
+            }).fail(function(){
+                showError('网络请求失败');
+                btn.prop('disabled', false).text('登录');
+            });
+            
+            return false;
+        });
+        
+        // 退出登录
+        $('#btnLogout').on('click', function(){
+            layer.confirm('确定要退出登录吗？', function(index){
+                $.post('{:url("upgrade/logout")}', function(res){
+                    if (res.code == 200) {
+                        layer.msg('已退出登录', {icon: 1, time: 1000}, function(){
+                            // 关闭当前iframe弹窗并刷新父窗口
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.location.reload();
+                            parent.layer.close(index);
+                        });
+                    } else {
+                        layer.msg(res.msg || '退出失败', {icon: 2});
+                    }
+                });
+                layer.close(index);
+            });
+        });
+        
+        function showError(msg) {
+            $('#errorMsg').text(msg).show();
+        }
+        
+        function hideError() {
+            $('#errorMsg').hide();
+        }
+    });
+</script>
+{/block}

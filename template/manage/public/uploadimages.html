@@ -1,0 +1,283 @@
+<style>
+    /* 新增预览样式 */
+    .preview-list {
+        margin-top: 10px;
+    }
+
+    .preview-item {
+        position: relative;
+        display: inline-block;
+        margin: 5px;
+        padding: 5px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .preview-item:hover {
+        box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .thumb-img {
+        display: block;
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        cursor: pointer;
+    }
+
+    .delete-btn {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        padding: 0;
+        width: 20px;
+        height: 20px;
+        line-height: 22px;
+        text-align: center;
+        background: rgba(255, 50, 50, 0.8);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: all 0.2s;
+    }
+
+    .delete-btn:hover {
+        opacity: 1;
+        background: #ff3232;
+        transform: scale(1.1);
+    }
+
+    .delete-btn i {
+        font-size: 14px;
+        position: relative;
+        top: -1px;
+    }
+</style>
+<script>
+    layui.use(['upload', 'layer'], function () {
+        const upload = layui.upload,
+            layer = layui.layer,
+            $ = layui.$;
+
+        // 初始化数据 --------------------------------------------------
+        let uploadedFiles = [];
+        try {
+            const initialValue = $('#images').val();
+            uploadedFiles = initialValue ?
+                initialValue.split(',').map(path => ({ path: path.trim() }))
+                : [];
+        } catch (e) {
+            console.error('初始化错误:', e);
+            uploadedFiles = [];
+        }
+
+        // 上传组件 ---------------------------------------------------
+        upload.render({
+            elem: '#uploadBtn',
+            url: '{:url("upload/uploadImages")}',
+            accept: 'images',
+            size: 5 * 1024,
+            exts: 'jpg|png',
+            multiple: true,
+            choose: function (obj) {
+                const remain = 10 - uploadedFiles.length;
+                if (remain <= 0) {
+                    layer.msg('最多上传10张图片');
+                    return false;
+                }
+
+                const files = obj.files || [];
+                if (files.length === 0) return;
+                obj.files = Array.from(files).slice(0, remain);
+            },
+            done: function (res) {
+                if (res.code === 0) {
+                    uploadedFiles = uploadedFiles.concat(res.data);
+                    updatePreview();
+                }
+            }
+        });
+
+        // 预览更新 ---------------------------------------------------
+        function updatePreview() {
+            const previewList = $('#previewList');
+            previewList.html(
+                uploadedFiles.map((file, index) => `
+                    <div class="preview-item" draggable="true" data-index="${index}">
+                        <img src="${file.path}" class="thumb-img" onclick="handlePreview('${file.path}')">
+                        <button type="button" class="delete-btn" onclick="deleteImage(${index}, event)">
+                            <i class="layui-icon">&#x1006;</i>
+                        </button>
+                    </div>`
+                ).join('')
+            );
+
+            // 初始化拖拽事件
+            initDragEvents();
+
+            // 同步有效数据到表单
+            $('#images').val(
+                uploadedFiles
+                    .map(f => f.path)  // 直接映射路径
+                    .join(',')         // 拼接为逗号分隔字符串
+            );
+        }
+
+        // 初始化拖拽事件 ---------------------------------------------------
+        function initDragEvents() {
+            const previewList = document.getElementById('previewList');
+            const items = previewList.querySelectorAll('.preview-item');
+            
+            // 设置拖拽事件
+            items.forEach(item => {
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragover', handleDragOver);
+                item.addEventListener('drop', handleDrop);
+                item.addEventListener('dragend', handleDragEnd);
+            });
+        }
+
+        // 拖拽变量
+        let dragSrcIndex = null;
+        let dragTargetIndex = null;
+
+        // 拖拽开始
+        function handleDragStart(e) {
+            dragSrcIndex = parseInt(this.getAttribute('data-index'));
+            e.dataTransfer.effectAllowed = 'move';
+            this.classList.add('dragging');
+        }
+
+        // 拖拽经过
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            this.classList.add('drag-over');
+            return false;
+        }
+
+        // 拖拽结束
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+            document.querySelectorAll('.preview-item').forEach(item => {
+                item.classList.remove('drag-over');
+            });
+        }
+
+        // 放置处理
+        function handleDrop(e) {
+            e.stopPropagation();
+            e.preventDefault();
+            
+            if (dragSrcIndex !== null) {
+                dragTargetIndex = parseInt(this.getAttribute('data-index'));
+                
+                // 交换数组元素
+                if (dragSrcIndex !== dragTargetIndex) {
+                    const temp = uploadedFiles[dragSrcIndex];
+                    uploadedFiles.splice(dragSrcIndex, 1);
+                    uploadedFiles.splice(dragTargetIndex, 0, temp);
+                    
+                    // 更新预览
+                    updatePreview();
+                }
+            }
+            
+            this.classList.remove('drag-over');
+            return false;
+        }
+
+        // 图片预览功能 -----------------------------------------------
+        window.handlePreview = function (imgUrl) {
+            layer.open({
+                type: 1,
+                title: false,
+                closeBtn: 1,
+                shadeClose: true,
+                content: `<div style="text-align:center;padding:20px">
+                            <img src="${imgUrl}" style="max-width:100%;max-height:96%">
+                        </div>`
+            });
+            return false; // 阻止默认行为
+        }
+
+        // 删除功能 (逻辑删除) ----------------------------------------
+        window.deleteImage = function (index, event) {
+            if (event) {
+                event.preventDefault(); // 阻止默认行为
+                event.stopPropagation(); // 阻止事件冒泡
+            }
+            
+            layer.confirm('确定从列表中移除此图片？', { 
+                icon: 2, 
+                skin: 'layui-layer-red',
+                title: '移除确认'
+            }, () => {
+                // 仅从前端移除，不执行物理删除
+                uploadedFiles.splice(index, 1);
+                updatePreview();
+                
+                layer.msg('已从列表移除', { 
+                    icon: 1, 
+                    time: 1500,
+                    skin: 'layui-layer-molv'
+                });
+            });
+        }
+
+        // 初始渲染
+        updatePreview();
+    });
+</script>
+
+<style>
+    /* 拖拽排序样式 */
+    .preview-item.dragging {
+        opacity: 0.5;
+        border: 2px dashed #1E9FFF;
+    }
+    .preview-item.drag-over {
+        border: 2px solid #1E9FFF;
+        background-color: rgba(30, 159, 255, 0.1);
+    }
+    
+    /* 预览列表样式 */
+    #previewList {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 15px;
+    }
+    .preview-item {
+        position: relative;
+        border: 1px solid #e6e6e6;
+        border-radius: 4px;
+        overflow: hidden;
+        cursor: move;
+    }
+    .thumb-img {
+        display: block;
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+    }
+    .delete-btn {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: rgba(0,0,0,0.6);
+        color: white;
+        border: none;
+        border-radius: 0 0 0 4px;
+        padding: 2px 5px;
+        cursor: pointer;
+    }
+    .delete-btn:hover {
+        background: #ff5722;
+    }
+</style>

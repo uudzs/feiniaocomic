@@ -1,0 +1,263 @@
+{extend name="common/base" /}
+
+{block name="seo"}
+<title>{$metatitle|default=''}</title>
+<meta name="keywords" content="{$metakeywords|default=''}">
+<meta name="description" content="{$metadescription|default=''}">
+{/block}
+
+{block name="css"} 
+<style>
+/* ========================================
+   单页内容样式
+   ======================================== */
+.single-page {
+    margin: 0 auto;
+    padding: 40px 0;
+}
+
+/* 页面标题 */
+.single-page-header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--color-border-color);
+}
+
+.single-page-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--color-text-color);
+    margin: 0 0 16px;
+    line-height: 1.4;
+}
+
+.single-page-meta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    font-size: 13px;
+    color: var(--color-text-color-secondary);
+}
+
+.single-page-meta span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.single-page-meta i {
+    color: var(--color-primary);
+}
+
+/* 内容区域 */
+.single-page-content {
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border-color);
+    border-radius: calc(var(--layout-border-radius) * 1.5);
+    padding: 40px;
+    margin-bottom: 40px;
+    transition: box-shadow 0.3s ease;
+}
+
+.single-page-content:hover {
+    box-shadow: var(--effect-shadow-card);
+}
+
+/* 富文本内容样式 */
+.single-page-body {
+    color: var(--color-text-color);
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+.single-page-body h1,
+.single-page-body h2,
+.single-page-body h3,
+.single-page-body h4,
+.single-page-body h5,
+.single-page-body h6 {
+    margin: 1.5em 0 0.8em;
+    color: var(--color-text-color);
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.single-page-body h1 { font-size: 1.8em; }
+.single-page-body h2 { font-size: 1.5em; }
+.single-page-body h3 { font-size: 1.3em; }
+.single-page-body h4 { font-size: 1.15em; }
+.single-page-body h5 { font-size: 1em; }
+.single-page-body h6 { font-size: 0.9em; }
+
+.single-page-body p {
+    margin: 0 0 1em;
+    text-align: justify;
+}
+
+.single-page-body img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--layout-border-radius);
+    margin: 1em 0;
+    display: block;
+}
+
+.single-page-body a {
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.single-page-body a:hover {
+    text-decoration: underline;
+}
+
+.single-page-body ul,
+.single-page-body ol {
+    margin: 1em 0;
+    padding-left: 2em;
+}
+
+.single-page-body ul {
+    list-style-type: disc;
+}
+
+.single-page-body ol {
+    list-style-type: decimal;
+}
+
+.single-page-body li {
+    margin: 0.5em 0;
+}
+
+.single-page-body blockquote {
+    margin: 1.5em 0;
+    padding: 16px 20px;
+    background: var(--color-bg-color);
+    border-left: 4px solid var(--color-primary);
+    border-radius: 0 var(--layout-border-radius) var(--layout-border-radius) 0;
+    color: var(--color-text-color-secondary);
+    font-style: italic;
+}
+
+.single-page-body pre,
+.single-page-body code {
+    font-family: 'Courier New', Consolas, monospace;
+    background: var(--color-bg-color);
+    border-radius: var(--layout-border-radius);
+}
+
+.single-page-body code {
+    padding: 2px 6px;
+    font-size: 0.9em;
+}
+
+.single-page-body pre {
+    padding: 16px;
+    overflow-x: auto;
+    margin: 1.5em 0;
+}
+
+.single-page-body pre code {
+    padding: 0;
+    background: none;
+}
+
+.single-page-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5em 0;
+    font-size: 14px;
+}
+
+.single-page-body table th,
+.single-page-body table td {
+    padding: 12px 16px;
+    border: 1px solid var(--color-border-color);
+    text-align: left;
+}
+
+.single-page-body table th {
+    background: var(--color-bg-color);
+    font-weight: 600;
+}
+
+.single-page-body table tr:nth-child(even) {
+    background: var(--color-bg-color);
+}
+
+.single-page-body hr {
+    border: none;
+    border-top: 1px solid var(--color-border-color);
+    margin: 2em 0;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+    .single-page {
+        padding: 24px 16px;
+    }
+
+    .single-page-title {
+        font-size: 22px;
+    }
+
+    .single-page-meta {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .single-page-content {
+        padding: 24px 16px;
+    }
+
+    .single-page-body {
+        font-size: 14px;
+    }
+
+    .single-page-body h1 { font-size: 1.6em; }
+    .single-page-body h2 { font-size: 1.4em; }
+    .single-page-body h3 { font-size: 1.2em; }
+}
+</style>
+{/block}
+
+{block name="header"}  
+{include file="common/header" /}
+{/block}
+
+{block name="main"}   
+<div class="main-page">
+    <div class="section-container">
+        <div class="single-page">
+            <!-- 内容展示 -->
+            <header class="single-page-header">
+                <h1 class="single-page-title">{$data.title}</h1>
+                <div class="single-page-meta">
+                    <span id="pageDate"><i class="fas fa-clock"></i> 添加于 {$data.created_at|date='Y-m-d'}</span>
+                </div>
+            </header>
+
+            <article class="single-page-content">
+                <div class="single-page-body">
+                    {$data.content|raw}
+                </div>
+            </article>
+        </div>
+    </div>
+</div>
+{/block}
+
+{block name="footer"}  
+{include file="common/footer" /}
+{/block}
+
+{block name="js"}
+{/block}
+
+{block name="script"}
+<script>
+</script>
+{/block}

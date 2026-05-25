@@ -1,0 +1,433 @@
+{extend name="base" /}
+{block name="title"}{$listTitle}{/block}
+{block name="main"}
+    {php} 
+        $hasNav = !empty($navItems) || !empty($cateRes);  
+    {/php}
+    {if isset($isPopup) && $isPopup}
+        <style>
+        .layui-layout-admin .layui-body {
+            left: 0;
+            top: 0;
+        }
+        </style>
+    {else/}        
+        {include file="public/menu" /}
+    {/if}
+    <div class="layui-body">   
+        <div class="c-flex-content {if $hasNav}has-nav{/if}">
+
+            <!-- 批量移动 -->
+            {notempty name="cateRes"} 
+            <script type="text/html" id="moveDialogTpl">
+                <div class="c-move-dialog" style="padding:15px;">
+                    <form class="layui-form">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">目标栏目</label>
+                            <div class="layui-input-block">
+                                <select name="cateid" lay-verify="required" lay-search>
+                                    <option value="">请选择目标栏目</option>
+                                    {volist name="cateRes" id="vo"}
+                                    <option value="{$vo.id}">{php}echo str_repeat('-', $vo['level']*6){/php}{$vo.title}</option>
+                                    {/volist}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn" lay-submit lay-filter="moveSubmit">立即移动</button>
+                                <button type="button" class="layui-btn layui-btn-primary" onclick="layer.closeAll()">取消</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </script>  
+            <!-- 栏目树形导航 -->
+            <div class="c-catetree">
+                <ul>
+                    <!-- 根节点 -->
+                    <li>
+                        <div class="c-tree-item {if ($type eq null)} tree-cur{/if}" data-id="0" data-pid="0">
+                            <button class="tree-switch layui-icon layui-icon-more c-tree-nobtn"></button> 
+                            <a href="{:url('comic/lst')}" class="tree-title">
+                                {$Think.lang.all_data}
+                            </a>
+                        </div>
+                    </li>
+                    <!-- 动态生成树节点 -->
+                    {volist name="cateRes" id="vo"}
+                    <li>
+                        <div class="c-tree-item {if ($vo.id == $type)}tree-cur{/if} collapsed" data-level="{$vo.level}"
+                            data-id="{$vo.id}" data-pid="{$vo.pid}">
+                            <!-- 折叠/展开按钮 -->
+                            {if $vo.is_leaf == 1}
+                            <button class="tree-switch layui-icon layui-icon-subtraction c-tree-nobtn"></button>
+                            {else/}
+                            <button class="tree-switch layui-icon layui-icon-addition c-tree-btn"></button>
+                            {/if}
+                            <!-- 栏目链接 -->
+                            <a href="{:url('comic/lst', ['cateid' => $vo.id])}">{$vo.title}</a>
+                        </div>
+                    </li>
+                    {/volist}
+                </ul>
+            </div>
+            {/notempty}
+
+            <!-- 左侧导航 -->
+            {notempty name="navItems"}
+            <div class="c-nav">
+                <ul>
+                    {volist name="navItems" id="nav"}
+                    <li>
+                        <a href="{$nav.url}" {if $nav.active}class="cur"{/if}>
+                            {$nav.title} 
+                        </a>
+                    </li>
+                    {/volist}
+                </ul>
+            </div>
+            {/notempty} 
+
+            <!-- 右侧内容 -->
+            <div class="c-content">
+                <div class="c-content-main">
+
+                    <!-- 搜索块 -->
+                    {notempty name="searchFields"}
+                    <div class="c-search">
+                        <form class="layui-form" method="post">  
+                            {volist name="searchFields" id="field"}
+                            <div class="layui-inline" style="width: {$field.width|default='180px'};margin:0 5px 0 0">
+                                {switch name="field.type"}
+                                    {case value="text"}
+                                    <input type="text" 
+                                        placeholder="{$field.placeholder}" 
+                                        name="{$field.name}" 
+                                        class="layui-input">
+                                    {/case}
+                                    
+                                    {case value="select"}
+                                    <select name="{$field.name}"> 
+                                        {volist name="field.options" id="option"}
+                                        <option value="{$option.value}">{$option.name}</option>
+                                        {/volist}
+                                    </select>
+                                    {/case}
+                                {/switch}
+                            </div>
+                            {/volist}
+                            
+                            <!-- 搜索按钮 -->
+                            <div class="layui-inline">
+                                <button type="button" class="layui-btn" id="search-btn">
+                                    <i class="layui-icon layui-icon-search"></i>
+                                    <span>搜索</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    {/notempty}
+
+                    <!-- 表格容器 -->
+                    <table id="dataTable" lay-filter="dataTable"></table>
+                    
+                    <!-- 工具栏模板 -->
+                    {present name="toolbar"}
+                    <script type="text/html" id="toolbar">
+                        <div class="layui-btn-container">
+                            {volist name="toolbar" id="btn"}
+                            <button class="layui-btn {$btn.class|default=''}" 
+                                    {if condition="$btn.event == ''"}
+                                        onclick="window.location.href='{$btn.url}{notempty name="btn.params"}?{php}echo http_build_query($btn['params']){/php}{/notempty}'"
+                                    {else/}
+                                        data-url="{$btn.url}"
+                                        data-params='{$btn.params|json_encode}'
+                                        lay-event="{$btn.event}"
+                                    {/if}>
+                                {present name="btn.icon"}<i class="layui-icon {$btn.icon}"></i>{/present}
+                                <span>{$btn.text}</span>
+                            </button>
+                        {/volist}
+                        </div>
+                    </script>
+                    {/present}
+                    
+                    <!-- 操作列模板 -->
+                    {present name="actions"}
+                    <script type="text/html" id="barEdit">
+                        <div class="c-edit">
+                            {volist name="actions" id="action"}
+                                {if $action.event == 'none'}
+                                <!-- 普通链接跳转 -->
+                                <a class="layui-text-{$action.color|default='blue'}" 
+                                    href="{$action.url}/{{d.ename || d.encrypted_id}}.html" 
+                                    target="_blank">
+                                    {$action.text}
+                                </a>
+                                {else}
+                                <!-- 事件绑定链接 -->
+                                <a class="layui-text-{$action.color|default='blue'}" 
+                                    data-url="{$action.url}{{d.id}}"   
+                                    data-params='{if isset($action.params)}{$action.params|json_encode}{else}{}{/if}'
+                                    lay-event="{$action.event}">
+                                    {$action.text}
+                                </a>
+                                {/if}
+                            {/volist}
+                        </div>
+                    </script>
+                    {/present}
+
+                    <!-- 树形标题模版 --> 
+                    <script type="text/html" id="treeTitleTpl">
+                        <!-- 层级缩进 -->
+                        <span style="display:inline-block;width:{{d.level * 2}}em"></span>
+                        
+                        <!-- 展开/收起按钮 -->
+                        {{# if(d.hasChildren){ }}
+                            <button class="c-tree-btn btn-expand" data-id="{{d.id}}">{{ d.expanded ? '-' : '+' }}</button>
+                        {{# } else { }}
+                            <button class="c-tree-nobtn">-</button>
+                        {{# } }}
+                        <!-- 树形连接线 -->
+                        {{ d.is_leaf ? '┕ ' : '┝ ' }}
+                        <!-- 分类跳转链接 -->
+                        {{# if(MODULE_TYPE === 'cate'){ }} 
+                            <a  href="{:url('comic/lst')}?cateid={{d.id}}">{{d.title}}</a>
+                        {{# } else { }} 
+                            <span> {{d.title}}</span>
+                        {{# } }}
+                    </script>
+
+                    <!--是与否模板-->
+                    <script type="text/html" id="whetherTpl">
+                        {{# 
+                            const TYPE_MAP = {
+                                0: {text: '否', color: 'black'},
+                                1: {text: '是', color: 'green'}, 
+                                default: {text: '无', color: 'gray'}
+                            };
+                            const cfg = TYPE_MAP[d.is_default] || TYPE_MAP.default;
+                        }}
+                        <span class="layui-badge layui-bg-{{ cfg.color }}">{{ cfg.text }}</span>
+                    </script>
+
+                    <!--颜色模板-->
+                    <script type="text/html" id="colorTpl">                        
+                        <span class="layui-badge" style="background-color: {{ d.color }};">{{ d.color }}</span>
+                    </script>
+
+                    <!--文档类型模板-->
+                    <script type="text/html" id="artTypeTpl">
+                        {{# 
+                            const TYPE_MAP = {
+                                1: {text: '头条', color: 'danger'},
+                                2: {text: '热门', color: 'orange'},
+                                3: {text: '推荐', color: 'blue'},
+                                4: {text: '加粗', color: 'cyan'},
+                                5: {text: '只读', color: 'black'},
+                                default: {text: '普通', color: 'green'}
+                            };
+                            const cfg = TYPE_MAP[d.type] || TYPE_MAP.default;
+                        }}
+                        <span class="layui-badge layui-bg-{{ cfg.color }}">{{ cfg.text }}</span>
+                    </script>
+
+                    <!-- 首页显示模板 -->
+                    <script type="text/html" id="indexTpl">
+                        <input {{ d.is_index==1 ? 'checked' : '' }} type="checkbox"
+                            data-model="{$model}"
+                            data-field="is_index"
+                            data-id="{{d.id}}" 
+                            data-url="{:url('common/changeStatus')}"
+                            lay-filter="changeStatus">
+                    </script>
+                    
+                    <!-- 导航模板 -->
+                    <script type="text/html" id="navmenuTpl">
+                        <input {{ d.navmenu==1 ? 'checked' : '' }} type="checkbox"
+                            data-model="{$model}"
+                            data-field="navmenu"
+                            data-id="{{d.id}}" 
+                            data-url="{:url('common/changeStatus')}"
+                            lay-filter="changeStatus">
+                    </script>
+                    
+                    <!-- 显示模板 --> 
+                    <script type="text/html" id="showTpl">
+                        <input {{ d.show==1 ? 'checked' : '' }} type="checkbox"
+                            data-model="{$model}"
+                            data-field="show"
+                            data-id="{{d.id}}" 
+                            data-url="{:url('common/changeStatus')}"
+                            lay-filter="changeStatus">
+                    </script>
+                    
+                    <!-- 状态模板 -->
+                    <script type="text/html" id="statusTpl">
+                        <input {{ d.status==1 ? 'checked' : '' }} type="checkbox"
+                            data-model="{$model}"
+                            data-field="status"
+                            data-id="{{d.id}}" 
+                            data-url="{:url('common/changeStatus')}"
+                            lay-filter="changeStatus">
+                    </script>
+
+                    <!-- 模块状态模板 -->
+                    <script type="text/html" id="statusModuleTpl">
+                        <input {{ d.status==1 ? 'checked' : '' }} type="checkbox"
+                            data-model="{$model}"
+                            data-field="status"
+                            data-id="{{d.id}}" 
+                            data-url="{:url('common/changeModuleStatus')}"
+                            lay-filter="changeStatus">
+                    </script>
+                
+                    {notempty name="colsUrl"}
+                    <!-- 链接模板 -->
+                    <script type="text/html" id="urlTpl"> 
+                        <a href="{$colsUrl}{{d.id}}"  >{{d.title}}{{d.url}}</a>
+                    </script>
+                    {/notempty}
+
+
+                    <!-- 排序模版 -->
+                    <script type="text/html" id="sortTpl">
+                        <div><input type="text" value="{{d.sort}}" class="layui-input c-sort"></div>
+                    </script>
+
+                    <!-- 图片模板 -->
+                    <script type="text/html" id="thumbTpl">
+                        {{# if(d.thumb){ }}
+                        <a href="javascript:;" class="c-imgshow" data-src="{{d.thumb}}">
+                            <img src="{{d.thumb}}" style="cursor:zoom-in;">
+                        </a>
+                        {{# } else { }}
+                        <span>无图片</span>
+                        {{# } }}
+                    </script>
+
+                    <!-- 封面模板 -->
+                    <script type="text/html" id="coverTpl">
+                        {{# if(d.cover){ }}
+                        <a href="javascript:;" class="c-imgshow" data-src="{{d.cover}}">
+                            <img src="{{d.cover}}" style="cursor:zoom-in;">
+                        </a>
+                        {{# } else { }}
+                        <span>无图片</span>
+                        {{# } }}
+                    </script>
+                    
+                    <!-- 背景模板 -->
+                    <script type="text/html" id="backgroundTpl">
+                        {{# if(d.background){ }}
+                        <a href="javascript:;" class="c-imgshow" data-src="{{d.background}}">
+                            <img src="{{d.background}}" style="cursor:zoom-in;">
+                        </a>
+                        {{# } else { }}
+                        <span>无图片</span>
+                        {{# } }}
+                    </script>
+
+                    <!-- 是否当前用户 -->
+                    <script type="text/html" id="currentUserTpl">
+                        {{# if(d.is_current == 1){ }}
+                            <span class="layui-badge layui-bg-red">是</span>
+                            <a href="{:url('admin/detail')}?id={{d.id}}" class="layui-text-red">点击查看该用户数据</a>
+                        {{# }else{ }}
+                            <span class="layui-badge layui-bg-black">否</span>
+                            <a href="{:url('admin/detail')}?id={{d.id}}" class="layui-text-gray">点击查看该用户数据</a>
+                        {{# } }}
+                    </script>   
+
+                    <!-- 头像模板 -->
+                    <script type="text/html" id="avatarTpl">
+                        {{# if(d.avatar){ }}
+                        <a href="javascript:;" class="c-imgshow" data-src="{{d.avatar}}">
+                            <img src="{{d.avatar}}" style="cursor:zoom-in;">
+                        </a>
+                        {{# } else { }}
+                        <span>无图片</span>
+                        {{# } }}
+                    </script>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{/block}
+{block name="javascript"}
+    {notempty name="cateRes"}
+        {js href="/static/admin/js/EverTree.js"}
+    {/notempty}
+
+    {php}$isTreeTable = $isTreeTable ?? false;{/php}
+    {if $isTreeTable}
+        {js href="/static/admin/js/treeTable.js"} 
+    {/if}
+    {php}
+        $modelName = str_replace('\\', '\\\\', $model);
+    {/php}
+    <script>
+    const MODULE_TYPE = '{$model|default=""}'; // 安全获取PHP变量,用于树形栏目跳转链接
+    layui.use(['table', 'form', 'treeTable'], function() {
+        const table = layui.table;
+        const form = layui.form;
+        const treeTable = layui.treeTable;
+        const $ = layui.$;
+        
+        // 将 &amp; 还原为 &
+        const rawUrl = '{$dataUrl}'; 
+        const decodedUrl = rawUrl.replace(/&amp;/g, '&');
+        
+        // 公共配置
+        const baseConfig = {
+            elem: '#dataTable',
+            url: decodedUrl,
+            toolbar: '#toolbar',
+            model: '{$modelName}',
+            SortUrl: '{:url("common/sort")}',
+            cols: JSON.parse('{$cols|raw}')
+        };
+
+        {if $isTreeTable}
+            // 树形表格初始化（直接实例化组件）
+            const treeInstance = treeTable({
+                ...baseConfig,
+                // 树形表格特化配置
+                expandKey: '{$model}_tree_expand', // 本地存储键名
+                tree: {
+                    iconColumn: 2,     // 图标所在列索引
+                    indentSize: 20    // 层级缩进像素
+                }
+            });
+        {else}
+            // 普通表格初始化
+            const tableIns = table.render({
+                ...baseConfig,
+                height: 'full-130',
+                page: true,
+                limits: [10, 15, 20, 30, 50,100,200,500,1000],
+                limit: 30,
+                defaultToolbar: [{
+                    title: '刷新表格',
+                    layEvent: 'refresh', 
+                    icon: 'layui-icon-refresh'
+                }, 'filter', 'exports', 'print']
+            });
+            
+            {present name="searchFields"}
+            // 搜索功能
+            $('#search-btn').on('click', function() {
+                const params = {};
+                $('.c-search [name]').each(function() {
+                    params[this.name] = $(this).val().trim();
+                });
+                tableIns.reload({where: params, page: {curr: 1}});
+            });
+            {/present}
+        {/if}
+    });
+    </script>
+{/block}

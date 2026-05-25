@@ -1,0 +1,254 @@
+{extend name="common/base" /}
+
+{block name="seo"}
+<title>{$ConfRes.sitename} - 开源免费跨平台漫画阅读解决方案，支持微信小程序/Android/iOS/鸿蒙多端</title>
+<meta name="keywords" content="{$ConfRes.sitename}，开源漫画阅读，微信小程序漫画，iOS漫画APP，Android漫画下载，鸿蒙漫画，漫画阅读器，多端漫画，阅读记录同步">
+<meta name="description" content="{$ConfRes.sitename}是开源免费的跨平台漫画阅读解决方案，支持微信小程序、Android、iOS、鸿蒙、H5等多端使用。提供舒适的阅读体验、离线下载、智能搜索等功能，开源共建，持续更新，欢迎下载体验！">
+{/block}
+
+{block name="css"} 
+<link rel="stylesheet" href="{:theme_asset('static/css/app.css')}">
+{/block}
+
+{block name="header"}  
+{include file="common/header" /}
+{/block}
+
+{block name="main"}    
+    <!-- Hero 区域 - Win11风格 -->
+    <section id="home" class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fas fa-rocket"></i>
+                    <span>开源免费</span>
+                </div>
+                <h1 class="hero-title">{$ConfRes.sitename}</h1>
+                <p class="hero-subtitle">跨平台开源漫画阅读解决方案</p>
+                <p class="hero-desc">支持微信小程序、Android、iOS、鸿蒙、H5 等多端，提供流畅的阅读体验和丰富的漫画资源。</p>
+                <div class="hero-actions">
+                    <a href="#download" class="btn btn-primary">
+                        <i class="fas fa-download"></i>
+                        <span>立即下载</span>
+                    </a>
+                    <a href="https://github.com" target="_blank" class="btn btn-secondary">
+                        <i class="fab fa-github"></i>
+                        <span>GitHub</span>
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-value">1000+</span>
+                        <span class="stat-label">Stars</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value">500+</span>
+                        <span class="stat-label">Forks</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value">50+</span>
+                        <span class="stat-label">贡献者</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="hero-card">
+                    <div class="demo-iframe-wrapper">
+                        <iframe src="https://demo.feiniao.comic.paheng.net/web/#/" frameborder="0" scrolling="no"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 功能特性 - Win11卡片风格 -->
+    <section id="features" class="features">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="section-title">核心功能</h2>
+                <p class="section-desc">全方位的漫画阅读体验</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>多端适配</h3>
+                    <p>支持微信小程序、Android、iOS、鸿蒙、H5 等多平台</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-book-reader"></i>
+                    </div>
+                    <h3>舒适阅读</h3>
+                    <p>多种阅读模式、护眼配色、流畅翻页动画</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-cloud-download-alt"></i>
+                    </div>
+                    <h3>离线下载</h3>
+                    <p>批量下载漫画，随时随地离线阅读</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3>智能搜索</h3>
+                    <p>强大的搜索功能，快速找到想看的漫画</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <h3>阅读记录</h3>
+                    <p>自动同步阅读进度，换设备无缝衔接</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3>开源免费</h3>
+                    <p>完全开源，社区共建，持续优化更新</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 下载安装 - Win11卡片风格 -->
+    <section id="download" class="download">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="section-title">下载安装</h2>
+                <p class="section-desc">选择适合您的平台</p>
+            </div>
+            <div class="download-grid">
+                <div class="download-card">
+                    <div class="download-icon">
+                        <i class="fab fa-weixin"></i>
+                    </div>
+                    <h3>微信小程序</h3>
+                    <p>微信扫码直接使用</p>
+                    <div class="qr-box">
+                        <i class="fas fa-qrcode"></i>
+                    </div>
+                </div>
+                <div class="download-card">
+                    <div class="download-icon">
+                        <i class="fab fa-android"></i>
+                    </div>
+                    <h3>Android</h3>
+                    <p>支持 Android 5.0+</p>
+                    <div class="qr-box">
+                        <img src="http://www.paheng.com/static/image/feiniao/comic/feiniao_cimic_v1_0_0.apk.png" alt="安卓下载" style="width: 120px;"> 
+                    </div>
+                </div>
+                <div class="download-card">
+                    <div class="download-icon">
+                        <i class="fab fa-apple"></i>
+                    </div>
+                    <h3>iOS</h3>
+                    <p>支持 iOS 13.0+</p>
+                    <div class="qr-box">
+                        <i class="fas fa-qrcode"></i>
+                    </div>
+                </div>
+                <div class="download-card">
+                    <div class="download-icon">
+                        <i class="fas fa-mobile"></i>
+                    </div>
+                    <h3>鸿蒙</h3>
+                    <p>支持 HarmonyOS 2.0+</p>
+                    <div class="qr-box">
+                        <i class="fas fa-qrcode"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 开源共建 - Win11风格 -->
+    <section id="opensource" class="opensource">
+        <div class="section-container">
+            <div class="opensource-content">
+                <div class="opensource-main">
+                    <div class="section-header left">
+                        <h2 class="section-title">开源共建</h2>
+                        <p class="section-desc">欢迎参与项目，一起打造更好的漫画阅读平台</p>
+                    </div>
+                    <p class="opensource-text">{$ConfRes.sitename}是一个完全开源的项目，我们相信开放的力量。通过开源，让更多用户享受到优质的漫画阅读体验，吸引开发者共同完善功能。</p>
+                    <div class="opensource-actions">
+                        <a href="https://github.com" target="_blank" class="btn btn-primary">
+                            <i class="fab fa-github"></i>
+                            <span>GitHub 仓库</span>
+                        </a>
+                        <a href="https://github.com" target="_blank" class="btn btn-secondary">
+                            <i class="fab fa-gitee"></i>
+                            <span>Gitee 仓库</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="opensource-stats">
+                    <div class="stat-card">
+                        <span class="stat-num">1000+</span>
+                        <span class="stat-name">Stars</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-num">500+</span>
+                        <span class="stat-name">Forks</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-num">50+</span>
+                        <span class="stat-name">Contributors</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 支持我们 - Win11风格 -->
+    <section id="support" class="support">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="section-title">支持我们</h2>
+                <p class="section-desc">您的支持是我们持续开发的动力</p>
+            </div>
+            <div class="support-content">
+                <div class="support-card">
+                    <div class="support-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3>赞助支持</h3>
+                    <p>如果您觉得{$ConfRes.sitename}对您有帮助，欢迎赞助支持！您的每一笔赞助都将用于服务器维护、功能开发和社区运营。</p>
+                </div>
+                <div class="payment-grid">
+                    <div class="payment-card">
+                        <div class="payment-qr">
+                            <img src="https://www.paheng.com/static/image/zfb.png" alt="微信一">
+                        </div>
+                        <span>微信一</span>
+                    </div>
+                    <div class="payment-card">
+                        <div class="payment-qr">
+                            <img src="https://www.paheng.com/static/image/wx.png" alt="微信二">
+                        </div>
+                        <span>微信二</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{/block}
+{block name="footer"}  
+{include file="common/footer" /}
+{/block}
+{block name="js"}
+<script src="{:theme_asset('static/js/app.js')}"></script>
+{/block}
+{block name="script"}
+<script>
+    console.log('飞鸟阅读');
+</script>
+{/block}

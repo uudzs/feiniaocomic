@@ -1,0 +1,94 @@
+<!-- UEditor 富文本编辑器集成 --> 
+<script src="/static/js/ueditor/ueditor.config.js"></script>
+<script src="/static/js/ueditor/ueditor.all.js"></script>
+<script src="/static/js/ueditor/lang/zh-cn/zh-cn.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+      // --- 配置层：集中管理所有编辑器配置 ---
+      const baseConfig = {  // 改为独立变量
+          initialFrameHeight: 540,     
+          autoHeightEnabled: false,    
+          scrollbars: true,            
+          wordCount: true,              
+          elementPathEnabled: false,   
+          retainOnlyLabelPasted: true, 
+          pasteplain: true,            
+          allowDivTransToP: false,     
+          xssFilterRules: true,
+          whiteList: {
+              a: { href: '', target: '_blank' },
+              img: ['src', 'alt', 'title']
+          }
+      };
+
+      const editorProfiles = {
+          instances: {
+              'textarea-content': {   // 主内容编辑器
+                  ...baseConfig,  // 直接使用变量
+                  initialFrameHeight: 600
+              },
+            
+              'content_xn': {    // 新增：商品性能编辑器
+                  ...baseConfig,
+                  initialFrameHeight: 480,
+              },
+              'content_notice': {     // 新增：注意事项编辑器
+                  ...baseConfig,
+                  initialFrameHeight: 480,
+                  autoHeightEnabled: true
+              }
+          }
+      };
+
+      // --- 核心逻辑：安全初始化 ---
+      const loadedEditors = [];
+
+      const initEditor = (containerId) => {
+          if (!document.getElementById(containerId)) {
+              console.warn(`编辑器容器 ${containerId} 不存在，跳过初始化`);
+              return null;
+          }
+          
+          try {
+              const instanceConfig = {
+                  ...baseConfig,
+                  ...(editorProfiles.instances[containerId] || {})
+              };
+              
+              const editor = UE.getEditor(containerId, instanceConfig);
+              loadedEditors.push(editor);
+              return editor;
+          } catch (error) {
+              console.error(`编辑器 ${containerId} 初始化失败：`, error);
+              return null;
+          }
+      };
+
+      // --- 执行初始化 ---
+      // 初始化预定义的编辑器实例
+      Object.keys(editorProfiles.instances).forEach(containerId => {
+          initEditor(containerId);
+      });
+      
+      // 初始化所有自定义字段的编辑器
+      // 查找所有class为layui-textarea的元素，检查其id是否包含特定前缀
+      const textareas = document.querySelectorAll('textarea.layui-textarea');
+      textareas.forEach(textarea => {
+          const containerId = textarea.id;
+          if (containerId && !editorProfiles.instances[containerId]) {
+              initEditor(containerId);
+          }
+      });
+
+      // --- 生命周期管理 ---
+      window.addEventListener('beforeunload', () => {
+          loadedEditors.forEach(editor => {
+              try { editor.destroy(); } 
+              catch (e) { console.error('销毁失败:', e); }
+          });
+          loadedEditors.length = 0;
+      });
+  });
+  </script>
+<!-- 编辑器集成 END -->
