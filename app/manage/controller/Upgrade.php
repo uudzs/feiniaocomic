@@ -6,7 +6,6 @@ namespace app\manage\controller;
 
 use app\common\service\upgrade\UpgradeService;
 use think\Request;
-use app\common\model\manage\SystemUpgradeLog;
 
 /**
  * 在线升级管理
@@ -24,7 +23,7 @@ class Upgrade extends Base
         $service = new UpgradeService();
 
         // 获取当前系统版本
-        $systemVersion = SystemUpgradeLog::where('type', 'system')->where('status', 6)->order('id desc')->value('to_version');
+        $systemVersion = config('version.version', '1.0.0');
 
         // 获取API地址
         $apiUrl = UpgradeService::getApiUrl();
