@@ -8,3 +8,4 @@
 /public/.user.ini
 /public/storage/*
 /modules/*
+/template/*
